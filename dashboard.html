@@ -1201,14 +1201,17 @@ async function laadInstellingen() {
         <div class="instelling-sectie">
           <h3>📚 Verdeling werkwoorden</h3>
           <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">De som van alle percentages moet 100 zijn.</p>
-          ${Object.entries(cfg.percentagesWerkwoorden).map(([code, pct]) => `
-          <div class="instelling-rij">
-            <div class="instelling-label">
-              ${werkwoordLabel(code)}
-              <div class="instelling-sublabel">Code: ${code}</div>
-            </div>
-            <input type="number" class="instelling-invoer" id="inst_${sleutel}_ww_${code}" value="${pct}" min="0" max="100">
-          </div>`).join('')}
+          ${['1a','1b','1c','2','3a','3b','3c','4'].filter(code => code in cfg.percentagesWerkwoorden).map(code => {
+            const pct = cfg.percentagesWerkwoorden[code];
+            return `
+                    <div class="instelling-rij">
+                      <div class="instelling-label">
+                        ${werkwoordLabel(code)}
+                        <div class="instelling-sublabel">Code: ${code}</div>
+                      </div>
+                      <input type="number" class="instelling-invoer" id="inst_${sleutel}_ww_${code}" value="${pct}" min="0" max="100">
+                    </div>`;
+          }).join('')}
         </div>` : ''}
 
         <div class="instelling-sectie">
@@ -1218,14 +1221,14 @@ async function laadInstellingen() {
               Drempel score A
               <div class="instelling-sublabel" id="inst_${sleutel}_labelA">Minimum punten voor een A (op ${cfg.aantalOpgaven||10})</div>
             </div>
-            <input type="number" class="instelling-invoer" id="inst_${sleutel}_drempelA" value="${cfg.drempelA??8.5}" min="0" max="10" step="0.5">
+            <input type="number" class="instelling-invoer" id="inst_${sleutel}_drempelA" value="${cfg.drempelA??8.5}" min="0" max="25" step="0.5">
           </div>
           <div class="instelling-rij">
             <div class="instelling-label">
               Drempel score B
               <div class="instelling-sublabel" id="inst_${sleutel}_labelB">Minimum punten voor een B (op ${cfg.aantalOpgaven||10})</div>
             </div>
-            <input type="number" class="instelling-invoer" id="inst_${sleutel}_drempelB" value="${cfg.drempelB??7.0}" min="0" max="10" step="0.5">
+            <input type="number" class="instelling-invoer" id="inst_${sleutel}_drempelB" value="${cfg.drempelB??7.0}" min="0" max="25" step="0.5">
           </div>
           <div class="instelling-rij">
             <div class="instelling-label">
