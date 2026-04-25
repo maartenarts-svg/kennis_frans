@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<!-- ============================================================
+ handleiding.html — Beheerdershandleiding Frans Oefenplatform
+============================================================ -->
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Handleiding — Frans Oefenplatform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b27;
+      --surface2:#1e2436;
+      --border:  rgba(255,255,255,0.08);
+      --text:    #e8eaf0;
+      --muted:   #8891aa;
+      --blauw:   #1a2a5e;
+      --accent:  #3a5bd9;
+      --rood:    #c0392b;
+      --success: #4cbb8a;
+      --warning: #f5c542;
+      --radius:  12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: flex;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+      gap: 40px;
+    }
+
+    /* ── ZIJBALK ── */
+    .zijbalk {
+      width: 240px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 32px;
+      align-self: flex-start;
+    }
+
+    .zijbalk-titel {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .nav-lijst {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-lijst a {
+      display: block;
+      padding: 8px 12px;
+      border-radius: 7px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.87rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .nav-lijst a:hover {
+      color: var(--text);
+      background: var(--surface);
+    }
+
+    .nav-lijst a.actief {
+      color: var(--text);
+      background: var(--surface);
+      font-weight: 700;
+    }
+
+    .nav-lijst .nav-sub {
+      padding-left: 24px;
+      font-size: 0.82rem;
+    }
+
+    .terug-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      transition: all 0.2s;
+    }
+
+    .terug-link:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* ── INHOUD ── */
+    .inhoud { flex: 1; min-width: 0; }
+
+    .pagina-titel {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .pagina-ondertitel {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── SECTIES ── */
+    .sectie {
+      margin-bottom: 56px;
+      scroll-margin-top: 32px;
+    }
+
+    .sectie-titel {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sectie-intro {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 20px;
+    }
+
+    /* ── STAPPEN ── */
+    .stappen {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .stap {
+      display: flex;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .stap-nr {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--blauw), var(--accent));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .stap-inhoud { flex: 1; }
+
+    .stap-inhoud strong {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stap-inhoud p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── INFO BLOKKEN ── */
+    .info-blok {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+
+    .info-blok h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-blok p, .info-blok li {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .info-blok ul {
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* ── WAARSCHUWING / TIP ── */
+    .tip {
+      background: rgba(76,187,138,0.08);
+      border: 1px solid rgba(76,187,138,0.25);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 0.87rem;
+      color: var(--success);
+      margin: 12px 0;
+      line-height: 1.6;
+    }
+
+    .waarschuwing {
+      background: rgba(245,197,66,0.08);
+      border: 1px solid rgba(245,197,66,0.25);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 0.87rem;
+      color: var(--warning);
+      margin: 12px 0;
+      line-height: 1.6;
+    }
+
+    /* ── TABEL ── */
+    .tabel-wrap {
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    td:first-child { font-weight: 600; }
+
+    /* ── SCHEIDINGSLIJN ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 40px 0;
+    }
+
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      .zijbalk { width: 100%; position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ZIJBALK -->
+  <aside class="zijbalk">
+    <a href="#" onclick="window.close(); return false;" class="terug-link">← Terug naar dashboard</a>
+    <p class="zijbalk-titel">Inhoud</p>
+    <ul class="nav-lijst">
+      <li><a href="#overzicht">Overzicht</a></li>
+      <li><a href="#inloggen">Inloggen</a></li>
+      <li><a href="#leerlingen">Leerlingen</a></li>
+      <li><a class="nav-sub" href="#leerling-toevoegen">Toevoegen</a></li>
+      <li><a class="nav-sub" href="#leerling-importeren">Importeren via CSV</a></li>
+      <li><a class="nav-sub" href="#leerling-bewerken">Bewerken</a></li>
+      <li><a class="nav-sub" href="#spellingshulp">Spellingshulp</a></li>
+      <li><a href="#groepen">Groepen</a></li>
+      <li><a class="nav-sub" href="#groep-aanmaken">Aanmaken</a></li>
+      <li><a class="nav-sub" href="#groep-oefeningen">Oefeningen koppelen</a></li>
+      <li><a class="nav-sub" href="#groep-leden">Leden beheren</a></li>
+      <li><a href="#groei">Groei bekijken</a></li>
+      <li><a href="#scorelijst">Scorelijst</a></li>
+      <li><a href="#instellingen">Instellingen</a></li>
+      <li><a href="#werkwoordsoorten">Werkwoordsoorten</a></li>
+      <li><a href="#scores-uitleg">Scores uitgelegd</a></li>
+      <li><a href="#faq">Veelgestelde vragen</a></li>
+    </ul>
+  </aside>
+
+  <!-- HOOFDINHOUD -->
+  <main class="inhoud">
+
+    <h1 class="pagina-titel">📖 Handleiding</h1>
+    <p class="pagina-ondertitel">
+      Frans Oefenplatform — Beheerdershandleiding<br>
+      Alles wat je nodig hebt om het platform te beheren.
+    </p>
+
+    <!-- ══ OVERZICHT ══ -->
+    <section class="sectie" id="overzicht">
+      <h2 class="sectie-titel">🗺️ Overzicht</h2>
+      <p class="sectie-intro">Het Frans Oefenplatform laat leerlingen werkwoorden oefenen via het beheerderspaneel. Als beheerder beheer je leerlingen, groepen en instellingen.</p>
+
+      <div class="info-blok">
+        <h3>📄 Pagina's van het platform</h3>
+        <ul>
+          <li><strong>login.html</strong> — Inlogpagina voor leerlingen en beheerder</li>
+          <li><strong>index.html</strong> — Leerlingenpaneel met oefeningen per werkwoordtijd</li>
+          <li><strong>groei.html</strong> — Groeioverzicht per leerling (scores per oefening)</li>
+          <li><strong>dashboard.html</strong> — Beheerderspaneel (deze omgeving)</li>
+          <li><strong>handleiding.html</strong> — Deze pagina</li>
+        </ul>
+      </div>
+
+      <div class="info-blok">
+        <h3>🔑 Hoe werkt toegang?</h3>
+        <p>Leerlingen loggen in met hun schoole-mailadres. Ze hoeven geen wachtwoord in te stellen — het systeem controleert of hun e-mailadres in de databank staat. Als beheerder log je in met het beheerderse-mailadres én een toegangscode.</p>
+      </div>
+    </section>
+
+    <!-- ══ INLOGGEN ══ -->
+    <section class="sectie" id="inloggen">
+      <h2 class="sectie-titel">🔐 Inloggen als beheerder</h2>
+      <p class="sectie-intro">De beheerderslogin werkt anders dan de leerlingenlogin.</p>
+
+      <div class="stappen">
+        <div class="stap">
+          <div class="stap-nr">1</div>
+          <div class="stap-inhoud">
+            <strong>Ga naar login.html</strong>
+            <p>Vul het beheerderse-mailadres in. Er verschijnt automatisch een extra veld voor de toegangscode.</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">2</div>
+          <div class="stap-inhoud">
+            <strong>Vul de toegangscode in</strong>
+            <p>De toegangscode staat in het bestand <code>config.js</code>. Bewaar deze veilig en deel ze niet met leerlingen.</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">3</div>
+          <div class="stap-inhoud">
+            <strong>Je wordt doorgestuurd naar het dashboard</strong>
+            <p>Je blijft ingelogd totdat je op "Uitloggen" klikt of de browsergeschiedenis wist.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="waarschuwing">
+        ⚠️ Als je per ongeluk ingelogd bent en niet meer naar het leerlingenpaneel kan, open dan de browser developer tools (F12) → Application → Local Storage → verwijder de sleutel <strong>frans_user</strong>.
+      </div>
+    </section>
+
+    <!-- ══ LEERLINGEN ══ -->
+    <section class="sectie" id="leerlingen">
+      <h2 class="sectie-titel">👥 Leerlingen</h2>
+      <p class="sectie-intro">Leerlingen beheer je via de tab "Leerlingen" in het dashboard.</p>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px" id="leerling-toevoegen">Leerling manueel toevoegen</h3>
+      <div class="stappen">
+        <div class="stap">
+          <div class="stap-nr">1</div>
+          <div class="stap-inhoud">
+            <strong>Vul het formulier in</strong>
+            <p>E-mailadres en naam zijn verplicht. Jaar en richting zijn optioneel maar handig voor filtering.</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">2</div>
+          <div class="stap-inhoud">
+            <strong>Klik op "Toevoegen"</strong>
+            <p>De leerling wordt aangemaakt in de databank. Ze kunnen nu inloggen maar zien nog geen oefeningen — daarvoor moeten ze aan een groep worden toegevoegd.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px" id="leerling-importeren">Leerlingen importeren via CSV</h3>
+      <p class="sectie-intro">Als je meerdere leerlingen tegelijk wil toevoegen, gebruik dan de CSV-import via de tab "Importeren".</p>
+
+      <div class="info-blok">
+        <h3>📄 CSV-formaat</h3>
+        <p>Het bestand moet de volgende kolommen hebben, gescheiden door komma's:</p>
+        <div class="tabel-wrap">
+          <table>
+            <thead><tr><th>Kolom</th><th>Verplicht</th><th>Voorbeeld</th></tr></thead>
+            <tbody>
+              <tr><td>email</td><td>Ja</td><td>jan.peeters@labsintniklaas.be</td></tr>
+              <tr><td>naam</td><td>Ja</td><td>Jan Peeters</td></tr>
+              <tr><td>jaar</td><td>Nee</td><td>2</td></tr>
+              <tr><td>richting</td><td>Nee</td><td>HuWe</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:10px">Download een voorbeeldbestand via de knop "Download voorbeeld-CSV" op de importpagina.</p>
+      </div>
+
+      <div class="stappen">
+        <div class="stap">
+          <div class="stap-nr">1</div>
+          <div class="stap-inhoud">
+            <strong>Maak een CSV-bestand aan</strong>
+            <p>Je kan dit doen in Excel of een teksteditor. Sla op als .csv met komma als scheidingsteken.</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">2</div>
+          <div class="stap-inhoud">
+            <strong>Upload het bestand</strong>
+            <p>Klik op de uploadzone of sleep het bestand erin. Je ziet een voorbeeld van de eerste 10 rijen.</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">3</div>
+          <div class="stap-inhoud">
+            <strong>Klik op "Importeren"</strong>
+            <p>Bestaande leerlingen worden niet overschreven — enkel nieuwe leerlingen worden toegevoegd.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px" id="leerling-bewerken">Leerling bewerken of verwijderen</h3>
+      <div class="info-blok">
+        <h3>✏️ Bewerken</h3>
+        <p>Klik op het potloodicoon naast een leerling. Je kan naam, jaar, richting, groepslidmaatschap en spellingshulp aanpassen.</p>
+      </div>
+      <div class="info-blok">
+        <h3>🗑️ Verwijderen</h3>
+        <p>Klik op het prullenbakicoon. Let op: alle resultaten van de leerling worden ook verwijderd. Dit kan niet ongedaan gemaakt worden.</p>
+      </div>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px" id="spellingshulp">Spellingshulp instellen</h3>
+      <div class="info-blok">
+        <h3>🔴 Rode golfjes</h3>
+        <p>Voor leerlingen met schrijfproblemen kan je spellingshulp activeren. Wanneer actief, verschijnen er rode golfjes onder het invoerveld als het antwoord duidelijk afwijkt van het correcte antwoord. Dit helpt leerlingen om tikfouten sneller op te merken.</p>
+        <p style="margin-top:8px">Activeer dit via het bewerkvenster van de leerling (✏️ icoon) → schakelaar "Spellingshulp".</p>
+      </div>
+
+      <div class="tip">
+        💡 Spellingshulp verschijnt pas als het antwoord minstens 2 letters bevat en duidelijk afwijkt. Het verschijnt niet bij kleine tikfouten die het systeem zelf al detecteert.
+      </div>
+    </section>
+
+    <!-- ══ GROEPEN ══ -->
+    <section class="sectie" id="groepen">
+      <h2 class="sectie-titel">🗂️ Groepen</h2>
+      <p class="sectie-intro">Groepen bepalen welke oefeningen leerlingen te zien krijgen. Een leerling zonder groep ziet geen oefeningen.</p>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px" id="groep-aanmaken">Groep aanmaken</h3>
+      <div class="stappen">
+        <div class="stap">
+          <div class="stap-nr">1</div>
+          <div class="stap-inhoud">
+            <strong>Typ een naam in het veld onderaan</strong>
+            <p>Kies een duidelijke naam, bijv. "2de jaar HuWe" of "Groep A".</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">2</div>
+          <div class="stap-inhoud">
+            <strong>Klik op "Groep aanmaken"</strong>
+            <p>De groep verschijnt in de lijst. Ze heeft nog geen oefeningen of leden.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px" id="groep-oefeningen">Oefeningen koppelen aan een groep</h3>
+      <div class="stappen">
+        <div class="stap">
+          <div class="stap-nr">1</div>
+          <div class="stap-inhoud">
+            <strong>Klik op het potloodicoon naast de groep</strong>
+            <p>Er opent een venster met alle beschikbare oefeningen.</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">2</div>
+          <div class="stap-inhoud">
+            <strong>Vink de gewenste oefeningen aan</strong>
+            <p>Leerlingen in deze groep zien enkel de aangevinkte oefeningen. Je kan dit op elk moment aanpassen.</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">3</div>
+          <div class="stap-inhoud">
+            <strong>Klik op "Opslaan"</strong>
+            <p>De wijzigingen zijn onmiddellijk actief voor alle leden van de groep.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip">
+        💡 Een leerling in meerdere groepen ziet de unie van alle oefeningen van al haar groepen.
+      </div>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px" id="groep-leden">Leden beheren</h3>
+      <div class="info-blok">
+        <h3>➕ Leden toevoegen</h3>
+        <p>Klik op het groene plusicoon naast een groep. Je ziet een lijst van alle leerlingen die nog niet in de groep zitten. Zoek op naam of filter op jaar/richting en klik op ➕ om een leerling toe te voegen.</p>
+      </div>
+      <div class="info-blok">
+        <h3>➖ Leden verwijderen</h3>
+        <p>Klik op het rode minusicoon naast een groep. Je ziet alle huidige leden. Klik op ➖ om een leerling uit de groep te verwijderen. De leerling zelf wordt niet verwijderd, enkel het groepslidmaatschap.</p>
+      </div>
+    </section>
+
+    <!-- ══ GROEI ══ -->
+    <section class="sectie" id="groei">
+      <h2 class="sectie-titel">📈 Groei bekijken</h2>
+      <p class="sectie-intro">Je kan de groei van een individuele leerling bekijken via de tab "Leerlingen" onderaan.</p>
+
+      <div class="info-blok">
+        <h3>Hoe werkt het?</h3>
+        <p>Selecteer een leerling in het dropdown-menu. Je ziet per werkwoordtijd (bijv. Indicatif présent) en per oefening (bijv. Werkwoorden op -er) alle sessies als gekleurde balkjes, van nieuwste naar oudste.</p>
+        <ul style="margin-top:10px">
+          <li><strong style="color:#a8e6a1">Groen (A)</strong> — uitstekend resultaat</li>
+          <li><strong style="color:#fff4a3">Geel (B)</strong> — goed resultaat</li>
+          <li><strong style="color:#ffcba4">Oranje (C)</strong> — nog verder oefenen</li>
+        </ul>
+      </div>
+
+      <div class="info-blok">
+        <h3>Statusicoontjes</h3>
+        <ul>
+          <li>⭐ — de laatste 3 sessies waren allemaal A</li>
+          <li>😊 — geen C in de laatste sessies</li>
+          <li>❗ — minstens één C in de laatste sessies</li>
+        </ul>
+      </div>
+
+      <div class="tip">
+        💡 Leerlingen kunnen hun eigen groei bekijken via groei.html na het inloggen.
+      </div>
+    </section>
+
+    <!-- ══ SCORELIJST ══ -->
+    <section class="sectie" id="scorelijst">
+      <h2 class="sectie-titel">📥 Scorelijst downloaden</h2>
+      <p class="sectie-intro">Via de tab "Scorelijst" download je een CSV-overzicht van alle scores in een bepaalde periode.</p>
+
+      <div class="stappen">
+        <div class="stap">
+          <div class="stap-nr">1</div>
+          <div class="stap-inhoud">
+            <strong>Kies een startdatum en einddatum</strong>
+            <p>Enkel sessies binnen deze periode worden meegenomen.</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">2</div>
+          <div class="stap-inhoud">
+            <strong>Filter optioneel op groep</strong>
+            <p>Laat leeg voor alle leerlingen, of kies een specifieke groep.</p>
+          </div>
+        </div>
+        <div class="stap">
+          <div class="stap-nr">3</div>
+          <div class="stap-inhoud">
+            <strong>Klik op "Download scorelijst"</strong>
+            <p>Je krijgt een CSV-bestand met per leerling de meest recente score per oefening in de gekozen periode. Leerlingen zonder sessie krijgen "NI" (niet ingediend).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-blok">
+        <h3>📊 Inhoud van het CSV-bestand</h3>
+        <p>Het bestand bevat kolommen voor e-mail, naam, en daarna één kolom per oefening (bijv. "Indicatif présent - Werkwoorden op -er"). De waarden zijn A, B, C of NI.</p>
+      </div>
+    </section>
+
+    <!-- ══ INSTELLINGEN ══ -->
+    <section class="sectie" id="instellingen">
+      <h2 class="sectie-titel">⚙️ Instellingen</h2>
+      <p class="sectie-intro">Via de tab "Instellingen" pas je de parameters van elke oefening aan. Er is een subtab per oefening. De instellingen zijn gegroepeerd in vier blokken.</p>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px">Blok 1 — Oefening</h3>
+      <div class="info-blok">
+        <h3>Aantal opgaven per sessie</h3>
+        <p>Hoeveel vragen een leerling krijgt per oefensessie. Standaard 10.</p>
+      </div>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px">Blok 2 — Onderwerpen</h3>
+      <div class="info-blok">
+        <h3>% varianten</h3>
+        <p>Bij elke vraag kiest het systeem een persoon (je, tu, il, nous, vous, ils). Dit percentage bepaalt hoe vaak daarbij een variant getoond wordt in plaats van de standaardvorm.</p>
+        <p style="margin-top:8px">Voorbeelden van varianten:</p>
+        <ul style="margin-top:6px">
+          <li>3e persoon enkelvoud: "Pierre", "Marie", "le chat" i.p.v. "il/elle/on"</li>
+          <li>1e persoon meervoud: "Pierre et moi", "mes parents" i.p.v. "nous"</li>
+          <li>2e persoon meervoud: "Pierre et toi" i.p.v. "vous"</li>
+          <li>3e persoon meervoud: "mes amis", "les élèves" i.p.v. "ils/elles"</li>
+        </ul>
+        <p style="margin-top:8px">Bij 1e en 2e persoon enkelvoud (je/tu) zijn er nauwelijks varianten — daar wordt altijd de standaardvorm getoond.</p>
+      </div>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px">Blok 3 — Verdeling werkwoorden</h3>
+      <p style="font-size:0.88rem;color:var(--muted);margin-bottom:12px">Dit blok verschijnt enkel bij oefeningen met meerdere werkwoordtypes (soort 1, soort 3 en mix). Zie ook de sectie <a href="#werkwoordsoorten" style="color:var(--accent)">Overzicht werkwoordsoorten</a> voor uitleg van de codes.</p>
+      <div class="info-blok">
+        <h3>Percentage per werkwoordtype</h3>
+        <p>Bepaalt hoe de vragen verdeeld worden over de verschillende types werkwoorden. De som moet altijd 100 zijn — het systeem controleert dit en geeft een foutmelding als de som niet klopt.</p>
+        <p style="margin-top:8px">Voorbeeld voor soort 1: 60% gewone -er werkwoorden, 20% -cer werkwoorden, 20% -ger werkwoorden.</p>
+      </div>
+
+      <h3 style="font-size:1rem;margin:24px 0 12px">Blok 4 — Scoring</h3>
+      <div class="tabel-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Betekenis</th><th>Standaard</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Drempel score A</td>
+              <td>Minimum punten om een A te behalen (op het aantal opgaven)</td>
+              <td>8.5</td>
+            </tr>
+            <tr>
+              <td>Drempel score B</td>
+              <td>Minimum punten om een B te behalen (op het aantal opgaven)</td>
+              <td>7.0</td>
+            </tr>
+            <tr>
+              <td>Min. lengte tikfouttolerantie</td>
+              <td>Bij onregelmatige werkwoorden: minimum aantal letters voordat het systeem een kleine schrijffout als tikfout beschouwt. Korte vormen zoals "ai", "as", "a" worden altijd exact gecontroleerd.</td>
+              <td>5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="waarschuwing">
+        ⚠️ Bij de werkwoordverdeling moet de som altijd 100 zijn. Het systeem controleert dit en laat je niet opslaan als de som niet klopt.
+      </div>
+
+      <div class="tip">
+        💡 Wijzigingen in de instellingen zijn onmiddellijk actief voor de volgende oefensessie. Lopende sessies worden niet beïnvloed.
+      </div>
+    </section>
+
+    <!-- ══ WERKWOORDSOORTEN ══ -->
+    <section class="sectie" id="werkwoordsoorten">
+      <h2 class="sectie-titel">📚 Overzicht werkwoordsoorten</h2>
+      <p class="sectie-intro">Overzicht van alle werkwoordtypes zoals ze in het systeem gebruikt worden. De codes verwijzen naar hoe de werkwoorden opgeslagen zijn in de databank (Firestore).</p>
+
+      <div class="tabel-wrap">
+        <table>
+          <thead>
+            <tr><th>Code</th><th>Omschrijving</th><th>Kenmerk</th><th>Voorbeelden</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1a</td>
+              <td>Gewone -er werkwoorden</td>
+              <td>Regelmatige uitgangen: -e, -es, -e, -ons, -ez, -ent</td>
+              <td>parler, trouver, jouer, aimer</td>
+            </tr>
+            <tr>
+              <td>1b</td>
+              <td>Werkwoorden op -cer</td>
+              <td>Bij nous: c → ç (commençons)</td>
+              <td>commencer, effacer, lancer</td>
+            </tr>
+            <tr>
+              <td>1c</td>
+              <td>Werkwoorden op -ger</td>
+              <td>Bij nous: extra e (mangeons)</td>
+              <td>manger, bouger, nager, ranger</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Werkwoorden op -re</td>
+              <td>Uitgangen: -s, -s, —, -ons, -ez, -ent (il zonder uitgang)</td>
+              <td>attendre, vendre, perdre, répondre</td>
+            </tr>
+            <tr>
+              <td>3a</td>
+              <td>Type sortir</td>
+              <td>Kortere stam in enkelvoud (sor-), langere in meervoud (sort-)</td>
+              <td>sortir, dormir, partir, mentir, sentir</td>
+            </tr>
+            <tr>
+              <td>3b</td>
+              <td>Type finir</td>
+              <td>Extra -iss- in meervoud (finissons, finissez, finissent)</td>
+              <td>finir, choisir, grandir, rougir, réfléchir</td>
+            </tr>
+            <tr>
+              <td>3c</td>
+              <td>Type ouvrir</td>
+              <td>Eindigt op -ir maar vervoegd als een -er werkwoord</td>
+              <td>ouvrir, offrir, découvrir, couvrir, souffrir</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Onregelmatige werkwoorden</td>
+              <td>Vervoeging moet uit het hoofd geleerd worden</td>
+              <td>être, avoir, aller, venir, faire, pouvoir, vouloir</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tip">
+        💡 Bij soort 1 en soort 3 kan je in de instellingen de verdeling over de subtypes instellen. Bij soort 2 en soort 4 is er maar één type, dus daar is geen verdeling nodig.
+      </div>
+    </section>
+
+    <!-- ══ SCORES UITGELEGD ══ -->
+    <section class="sectie" id="scores-uitleg">
+      <h2 class="sectie-titel">🎯 Scores uitgelegd</h2>
+      <p class="sectie-intro">Hoe worden de scores berekend en wat betekenen ze?</p>
+
+      <div class="info-blok">
+        <h3>Puntensysteem per vraag</h3>
+        <ul>
+          <li><strong>Correct op de eerste poging</strong> → 1 punt</li>
+          <li><strong>Tikfout op de eerste poging + correct op de tweede poging</strong> → 0,5 punt</li>
+          <li><strong>Grote fout</strong> → 0 punten, geen tweede kans</li>
+        </ul>
+      </div>
+
+      <div class="info-blok">
+        <h3>Wat is een tikfout?</h3>
+        <p>Het systeem onderscheidt tikfouten van grote fouten. Bij regelmatige werkwoorden moet de uitgang altijd exact correct zijn (inclusief accenten). Een kleine afwijking in de stam wordt als tikfout beschouwd. Bij onregelmatige werkwoorden gelden strengere regels: korte vormen moeten exact correct zijn, bij langere vormen is er beperkte tolerantie.</p>
+      </div>
+
+      <div class="info-blok">
+        <h3>Eindscore per sessie</h3>
+        <ul>
+          <li><strong style="color:#a8e6a1">A</strong> — ≥ 8,5 punten op 10 (aanpasbaar in instellingen)</li>
+          <li><strong style="color:#fff4a3">B</strong> — ≥ 7,0 punten op 10 (aanpasbaar in instellingen)</li>
+          <li><strong style="color:#ffcba4">C</strong> — minder dan 7,0 punten op 10</li>
+        </ul>
+      </div>
+
+      <div class="info-blok">
+        <h3>Feedback bij fouten</h3>
+        <p>Bij een tikfout krijgt de leerling een waarschuwing en een tweede kans. Bij een grote fout toont het systeem onmiddellijk het juiste antwoord én de bijhorende grammaticaregel met een vervoegingstabel van het werkwoord.</p>
+      </div>
+    </section>
+
+    <!-- ══ FAQ ══ -->
+    <section class="sectie" id="faq">
+      <h2 class="sectie-titel">❓ Veelgestelde vragen</h2>
+
+      <div class="info-blok">
+        <h3>Een leerling ziet geen oefeningen na het inloggen</h3>
+        <p>Controleer of de leerling aan een groep is toegevoegd en of die groep minstens één oefening heeft aangevinkt.</p>
+      </div>
+
+      <div class="info-blok">
+        <h3>Een leerling kan niet inloggen</h3>
+        <p>Controleer of het e-mailadres correct is ingevoerd in de databank. Het moet exact overeenkomen met het adres waarmee de leerling probeert in te loggen (hoofdletterongevoelig).</p>
+      </div>
+
+      <div class="info-blok">
+        <h3>Hoe voeg ik een nieuwe werkwoordtijd toe?</h3>
+        <p>Dat vereist een aanpassing in het bestand <code>config.js</code> (nieuwe tijd toevoegen aan <code>TIJDEN</code>), nieuwe oefenpagina's, nieuwe grammaticabestanden, en nieuwe werkwoorddata in Firestore. Neem hiervoor contact op met de beheerder van de code.</p>
+      </div>
+
+      <div class="info-blok">
+        <h3>Kan ik de lijst van onderwerpen (varianten) aanpassen?</h3>
+        <p>Ja, via de Firebase Console → collectie <code>onderwerpen</code> → document <code>personen</code>. Voeg varianten toe aan de array van de gewenste persoon. Opgepast: verwijder de standaardvorm (je, tu, il/elle/on, nous, vous, ils/elles) niet.</p>
+      </div>
+
+      <div class="info-blok">
+        <h3>Resultaten verwijderen van een leerling</h3>
+        <p>Dat is momenteel enkel mogelijk via de Firebase Console → collectie <code>leerlingen</code> → document van de leerling → veld <code>resultaten</code>. Pas dit veld manueel aan. Een tool hiervoor in het dashboard is gepland voor een latere versie.</p>
+      </div>
+
+      <div class="info-blok">
+        <h3>De spellingshulp werkt niet voor een leerling</h3>
+        <p>Controleer of spellingshulp is ingeschakeld via het bewerkvenster van de leerling (✏️). Let op: de leerling moet opnieuw inloggen nadat spellingshulp is ingeschakeld, zodat de instelling wordt ingeladen.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Markeer actief nav-item op basis van scroll
+  const secties = document.querySelectorAll('.sectie');
+  const navLinks = document.querySelectorAll('.nav-lijst a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('actief'));
+        const actief = document.querySelector(`.nav-lijst a[href="#${entry.target.id}"]`);
+        if (actief) actief.classList.add('actief');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  secties.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<!-- ============================================================
+ login.html — Frans Oefenplatform
+============================================================ -->
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inloggen — Frans Oefenplatform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, #1a2a5e 0%, #c0392b 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 20px;
+      padding: 48px 40px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #1a2a5e, #c0392b);
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 20px rgba(26,42,94,0.35);
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #1a2a5e;
+      box-shadow: 0 0 0 3px rgba(26,42,94,0.1);
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px white inset;
+      box-shadow: 0 0 0 1000px white inset;
+      -webkit-text-fill-color: #1a1a2e;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #1a2a5e, #c0392b);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(26,42,94,0.3);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      text-align: center;
+      display: none;
+    }
+
+    .message.error {
+      background: #fee;
+      color: #c33;
+      border: 1px solid #fcc;
+      display: block;
+    }
+
+    .message.success {
+      background: #efe;
+      color: #373;
+      border: 1px solid #cfc;
+      display: block;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid white;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #code-group { display: none; }
+
+    @media (max-width: 500px) {
+      .login-card { padding: 36px 28px; }
+      h1 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <div class="logo">
+    <div class="logo-icon">🇫🇷</div>
+    <h1>Frans Oefenplatform</h1>
+    <p class="subtitle">Log in met je schoolemail</p>
+  </div>
+
+  <form id="login-form">
+    <div class="form-group">
+      <label for="email">E-mailadres</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="jouw.naam@labsintniklaas.be"
+        required
+        autocomplete="off"
+        spellcheck="false"
+      >
+    </div>
+
+    <div class="form-group" id="code-group">
+      <label for="code">Toegangscode</label>
+      <input
+        type="text"
+        id="code"
+        name="code"
+        placeholder="Vul de toegangscode in"
+        autocomplete="off"
+        spellcheck="false"
+      >
+    </div>
+
+    <button type="submit" class="btn" id="submit-btn">Inloggen</button>
+    <div class="message" id="message"></div>
+  </form>
+</div>
+
+<script type="module">
+import { db, ADMIN_EMAIL, ADMIN_CODE } from './config.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// ── Redirect als al ingelogd ──
+window.addEventListener('DOMContentLoaded', () => {
+  const stored = localStorage.getItem('frans_user');
+  if (stored) {
+    try {
+      const user = JSON.parse(stored);
+      window.location.href = user.isAdmin ? 'dashboard.html' : 'index.html';
+    } catch(e) {
+      localStorage.removeItem('frans_user');
+    }
+  }
+});
+
+// ── Toon code-veld bij admin email ──
+document.getElementById('email').addEventListener('input', (e) => {
+  const email = e.target.value.trim().toLowerCase();
+  const codeGroup = document.getElementById('code-group');
+  if (email === ADMIN_EMAIL.toLowerCase()) {
+    codeGroup.style.display = 'block';
+    document.getElementById('code').required = true;
+  } else {
+    codeGroup.style.display = 'none';
+    document.getElementById('code').required = false;
+  }
+});
+
+// ── Login formulier ──
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const email  = document.getElementById('email').value.trim().toLowerCase();
+  const code   = document.getElementById('code').value.trim();
+  const btn    = document.getElementById('submit-btn');
+  const msg    = document.getElementById('message');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Inloggen...';
+  msg.className = 'message';
+  msg.style.display = 'none';
+
+  try {
+    // ── ADMIN LOGIN ──
+    if (email === ADMIN_EMAIL.toLowerCase()) {
+      if (code !== ADMIN_CODE) throw new Error('Onjuiste toegangscode.');
+
+      localStorage.setItem('frans_user', JSON.stringify({
+        email: ADMIN_EMAIL,
+        naam: 'Beheerder',
+        isAdmin: true
+      }));
+
+      msg.className = 'message success';
+      msg.textContent = '✓ Welkom, beheerder!';
+      msg.style.display = 'block';
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
+      return;
+    }
+
+    // ── LEERLING LOGIN ──
+    const docSnap = await getDoc(doc(db, 'leerlingen', email));
+
+    if (!docSnap.exists()) {
+      throw new Error('Je e-mailadres is niet geregistreerd. Neem contact op met je leerkracht.');
+    }
+
+    const data = docSnap.data();
+    localStorage.setItem('frans_user', JSON.stringify({
+      email,
+      naam: data.naam || email,
+      isAdmin: false,
+      spellingshulp: data.spellingshulp || false
+    }));
+
+    msg.className = 'message success';
+    msg.textContent = `✓ Welkom, ${data.naam || email}!`;
+    msg.style.display = 'block';
+    setTimeout(() => window.location.href = 'index.html', 800);
+
+  } catch(err) {
+    msg.className = 'message error';
+    msg.textContent = err.message || 'Er ging iets mis. Probeer opnieuw.';
+    msg.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Inloggen';
+  }
+});
+</script>
+
+</body>
+</html>

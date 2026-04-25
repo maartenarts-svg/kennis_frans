@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<!-- ============================================================
+ groei.html — Groeioverzicht leerling Frans Oefenplatform
+============================================================ -->
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mijn Groei — Frans</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b27;
+      --surface2:#1e2436;
+      --border:  rgba(255,255,255,0.08);
+      --text:    #e8eaf0;
+      --muted:   #8891aa;
+      --blauw:   #1a2a5e;
+      --accent:  #3a5bd9;
+      --rood:    #c0392b;
+      --success: #4cbb8a;
+      --score-a: #a8e6a1;
+      --score-b: #fff4a3;
+      --score-c: #ffcba4;
+      --hoogte-a: 80px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(76,187,138,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 10% 80%, rgba(58,91,217,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .page-title h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .page-title span {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ── TIJDEN TABS ── */
+    .tijden-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 5px;
+      flex-wrap: wrap;
+    }
+
+    .tijd-tab {
+      flex: 1;
+      min-width: 140px;
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .tijd-tab:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    .tijd-tab.actief {
+      background: linear-gradient(135deg, var(--blauw), var(--accent));
+      color: white;
+      box-shadow: 0 2px 12px rgba(58,91,217,0.35);
+    }
+
+    /* ── TAB INHOUD ── */
+    .tab-inhoud { display: none; }
+
+    .tab-inhoud.actief {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ── GROEI TABEL ── */
+    .groei-tabel { margin-top: 8px; }
+
+    .groei-rij {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      animation: fadeIn 0.4s ease both;
+    }
+
+    .groei-rij:first-child { border-top: 1px solid var(--border); }
+
+    .type-naam {
+      width: 260px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .status-icon { font-size: 1.2rem; }
+
+    .scores-container {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: nowrap;
+      flex: 1;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .scores-container::-webkit-scrollbar { height: 4px; }
+    .scores-container::-webkit-scrollbar-track { background: var(--surface2); border-radius: 2px; }
+    .scores-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .score-blok {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      animation: scaleIn 0.3s ease both;
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .blok {
+      width: 50px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      border-radius: 6px 6px 0 0;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding-bottom: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .blok:hover { transform: translateY(-3px); }
+    .blok.score-a { background: var(--score-a); color: #2d5016; height: var(--hoogte-a); }
+    .blok.score-b { background: var(--score-b); color: #7a6c00; height: calc(var(--hoogte-a) * 2/3); }
+    .blok.score-c { background: var(--score-c); color: #8b4513; height: calc(var(--hoogte-a) / 3); min-height: 32px; }
+
+    .datum { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+
+    /* ── LEEG / LOADING ── */
+    .leeg {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .loading { text-align: center; padding: 80px 0; color: var(--muted); }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 700px) {
+      .type-naam { width: 160px; font-size: .82rem; }
+      .blok { width: 40px; font-size: 0.95rem; }
+      :root { --hoogte-a: 60px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a href="index.html" class="back-btn">← Terug naar oefeningen</a>
+    <div class="page-title">
+      <h1>📈 Mijn groei</h1>
+      <span id="user-naam">Laden...</span>
+    </div>
+  </header>
+
+  <div id="inhoud">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Jouw resultaten laden...</p>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { db, TIJDEN } from './config.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// ── Login check ──
+const user = checkLogin();
+
+function checkLogin() {
+  const stored = localStorage.getItem('frans_user');
+  if (!stored) { window.location.href = 'login.html'; return null; }
+  try {
+    const u = JSON.parse(stored);
+    if (u.isAdmin) { window.location.href = 'dashboard.html'; return null; }
+    document.getElementById('user-naam').textContent = u.naam || u.email;
+    return u;
+  } catch(e) {
+    localStorage.removeItem('frans_user');
+    window.location.href = 'login.html';
+    return null;
+  }
+}
+
+// ── Init ──
+async function init() {
+  if (!user) return;
+  try {
+    const leerlingSnap = await getDoc(doc(db, 'leerlingen', user.email));
+    if (!leerlingSnap.exists()) throw new Error('Geen data gevonden');
+
+    const data       = leerlingSnap.data();
+    const resultaten = data.resultaten || [];
+    const groepIds   = data.groepen || [];
+
+    // Bepaal beschikbare soorten via groepen
+    const beschikbareSoorten = new Set();
+    for (const groepId of groepIds) {
+      const groepSnap = await getDoc(doc(db, 'groepen', groepId));
+      if (groepSnap.exists()) {
+        (groepSnap.data().oefeningen || []).forEach(s => beschikbareSoorten.add(s));
+      }
+    }
+
+    renderInterface(resultaten, beschikbareSoorten);
+
+  } catch(err) {
+    console.error('Fout bij laden:', err);
+    document.getElementById('inhoud').innerHTML = `
+      <div class="leeg">
+        <p>⚠️ Kon je gegevens niet laden.</p>
+        <p style="margin-top:8px;font-size:.85rem">${err.message}</p>
+      </div>`;
+  }
+}
+
+// ── Interface renderen ──
+function renderInterface(resultaten, beschikbareSoorten) {
+  const container = document.getElementById('inhoud');
+
+  if (!beschikbareSoorten.size) {
+    container.innerHTML = `<div class="leeg">📭 Er zijn nog geen oefeningen beschikbaar. Neem contact op met je leerkracht.</div>`;
+    return;
+  }
+
+  // Groepeer resultaten per soort, nieuwste eerst
+  // Elk resultaat heeft: { soort, score, datum }
+  const perSoort = {};
+  resultaten.forEach(r => {
+    if (!perSoort[r.soort]) perSoort[r.soort] = [];
+    perSoort[r.soort].push(r);
+  });
+  Object.keys(perSoort).forEach(s => {
+    perSoort[s].sort((a, b) => new Date(b.datum) - new Date(a.datum));
+  });
+
+  // Bouw tabs per tijd
+  let tabsHTML     = '';
+  let inhoudenHTML = '';
+  let eersteActief = false;
+
+  TIJDEN.forEach(tijd => {
+    const beschikbareOef = tijd.oefeningen.filter(o => beschikbareSoorten.has(o.soort));
+    if (!beschikbareOef.length) return;
+
+    const actief = !eersteActief;
+    tabsHTML += `<button class="tijd-tab${actief ? ' actief' : ''}" onclick="toonTab('${tijd.id}')">${tijd.label}</button>`;
+
+    // Rijen per oefening (soort)
+    let rijenHTML = '';
+    beschikbareOef.forEach((oef, idx) => {
+      const scores    = perSoort[oef.soort] || [];
+      const laatste3  = scores.slice(0, 3).map(s => s.score);
+
+      // Statusicoontje — zelfde logica als wiskunde
+      let statusIcon = '❗';
+      if (laatste3.length >= 3 && laatste3.every(s => s === 'A')) statusIcon = '⭐';
+      else if (laatste3.length >= 1 && !laatste3.includes('C'))   statusIcon = '😊';
+
+      // Balkjes
+      let blokkenbHTML = '';
+      if (!scores.length) {
+        blokkenbHTML = `<span style="color:var(--muted);font-size:.85rem;font-style:italic">Nog niet geoefend</span>`;
+      } else {
+        scores.forEach((s, si) => {
+          const d = new Date(s.datum);
+          const datumStr = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+          blokkenbHTML += `
+            <div class="score-blok" style="animation-delay:${idx*0.08+si*0.05}s">
+              <div class="blok score-${s.score.toLowerCase()}">${s.score}</div>
+              <div class="datum">${datumStr}</div>
+            </div>`;
+        });
+      }
+
+      rijenHTML += `
+        <div class="groei-rij" style="animation-delay:${idx*0.08}s">
+          <div class="type-naam">
+            <span class="status-icon">${statusIcon}</span>
+            <span>${oef.icon} ${oef.label}</span>
+          </div>
+          <div class="scores-container">${blokkenbHTML}</div>
+        </div>`;
+    });
+
+    inhoudenHTML += `
+      <div class="tab-inhoud${actief ? ' actief' : ''}" id="tab-${tijd.id}">
+        <div class="groei-tabel">${rijenHTML}</div>
+      </div>`;
+
+    eersteActief = true;
+  });
+
+  if (!eersteActief) {
+    container.innerHTML = `<div class="leeg">📭 Nog geen oefeningen beschikbaar.</div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="tijden-tabs">${tabsHTML}</div>
+    <div>${inhoudenHTML}</div>`;
+}
+
+// ── Tab tonen ──
+window.toonTab = function(tijdId) {
+  document.querySelectorAll('.tab-inhoud').forEach(t => t.classList.remove('actief'));
+  document.querySelectorAll('.tijd-tab').forEach(b => b.classList.remove('actief'));
+  const tab = document.getElementById('tab-' + tijdId);
+  if (tab) tab.classList.add('actief');
+  document.querySelectorAll('.tijd-tab').forEach(btn => {
+    if (btn.getAttribute('onclick') === `toonTab('${tijdId}')`) btn.classList.add('actief');
+  });
+};
+
+init();
+</script>
+</body>
+</html>

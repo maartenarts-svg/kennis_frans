@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!-- ============================================================
+ import_onderwerpen_config.html — Eenmalig importscript
+ voor onderwerpen en config-instellingen
+ Gebruik: open via Live Server, klik op de knoppen
+============================================================ -->
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import Onderwerpen & Config — Frans</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: monospace; background: #0f1117; color: #e8eaf0; padding: 32px; min-height: 100vh; }
+    h1 { font-size: 1.3rem; margin-bottom: 8px; color: #5b8dee; }
+    p  { color: #8891aa; font-size: 0.88rem; margin-bottom: 24px; }
+    .knoppen { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+    .btn { padding: 12px 28px; background: #5b8dee; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: monospace; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn.groen { background: #4cbb8a; }
+    .log { margin-top: 8px; background: #141720; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px; max-height: 600px; overflow-y: auto; font-size: 0.82rem; line-height: 1.8; }
+    .ok   { color: #4cbb8a; }
+    .fout { color: #e05757; }
+    .info { color: #5b8dee; }
+    .warn { color: #f5c842; }
+    h2 { font-size: 1rem; color: #5b8dee; margin: 24px 0 8px; }
+  </style>
+</head>
+<body>
+
+<h1>📥 Import Onderwerpen & Config — Frans Oefenplatform</h1>
+<p>Importeer de onderwerpen-databank en de standaard config-instellingen naar Firestore.<br>
+   Eenmalig uitvoeren. Controleer daarna in de Firebase Console.</p>
+
+<div class="knoppen">
+  <button class="btn" id="btn-onderwerpen" onclick="importeerOnderwerpen()">▶ Onderwerpen importeren</button>
+  <button class="btn groen" id="btn-config" onclick="importeerConfig()">▶ Config importeren</button>
+</div>
+
+<div class="log" id="log"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC43esFV3YrATDsldfTFxpz8cncI00qQJA",
+  authDomain: "kennis-frans.firebaseapp.com",
+  projectId: "kennis-frans",
+  storageBucket: "kennis-frans.firebasestorage.app",
+  messagingSenderId: "922019945708",
+  appId: "1:922019945708:web:2f03262e2fd9d7953199c9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ══════════════════════════════════════════════════════════════
+// ONDERWERPEN
+// Georganiseerd per persoon.
+// Personen: 1s, 2s, 3s, 1p, 2p, 3p
+// De eerste variant is telkens het standaard onderwerp.
+// ══════════════════════════════════════════════════════════════
+const onderwerpen = {
+  "1s": {
+    standaard: "je",
+    varianten: ["je", "moi"]
+  },
+  "2s": {
+    standaard: "tu",
+    varianten: ["tu", "toi"]
+  },
+  "3s": {
+    standaard: "il/elle/on",
+    varianten: [
+      "il/elle/on",
+      "Pierre", "Marie", "Lucas", "Emma",
+      "le chat", "la chatte",
+      "le professeur", "la directrice",
+      "mon frère", "ma sœur",
+      "mon ami", "mon amie"
+    ]
+  },
+  "1p": {
+    standaard: "nous",
+    varianten: [
+      "nous",
+      "Pierre et moi", "Marie et moi",
+      "Lucas et moi", "Emma et moi",
+      "mon frère et moi", "ma sœur et moi",
+      "mes parents et moi"
+    ]
+  },
+  "2p": {
+    standaard: "vous",
+    varianten: [
+      "vous",
+      "Pierre et toi", "Marie et toi",
+      "toi et tes amis", "toi et ta sœur",
+      "toi et ton frère"
+    ]
+  },
+  "3p": {
+    standaard: "ils/elles",
+    varianten: [
+      "ils/elles",
+      "Pierre et Marie", "Lucas et Emma",
+      "mes parents", "mes amis",
+      "les chats", "les élèves",
+      "Pierre et son frère", "Marie et sa sœur"
+    ]
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// CONFIG — standaardinstellingen per oefening
+//
+// percentageVariant: % kans dat een variant-onderwerp getoond
+// wordt (bijv. "Pierre" i.p.v. "il/elle/on", "mes amis" i.p.v.
+// "ils/elles"). Geldt voor alle personen met varianten (3s,1p,2p,3p).
+//
+// percentagesWerkwoorden: verdeling over de werkwoordtypes.
+// Zie handleiding voor uitleg van de codes (1a, 1b, 1c, ...).
+// Som moet altijd 100 zijn.
+// ══════════════════════════════════════════════════════════════
+const config = {
+
+  // ── Indicatif présent — soort 1 ──
+  indicatif_present_soort1: {
+    // Blok 1: Oefening
+    aantalOpgaven: 10,
+    // Blok 2: Onderwerpen
+    percentageVariant: 30,
+    // Blok 3: Verdeling werkwoorden
+    // 1a = gewone -er (parler), 1b = -cer (commencer), 1c = -ger (manger)
+    percentagesWerkwoorden: { "1a": 60, "1b": 20, "1c": 20 },
+    // Blok 4: Scoring
+    drempelA: 8.5,
+    drempelB: 7.0,
+    typfoutMinLengte: 5
+  },
+
+  // ── Indicatif présent — soort 2 ──
+  indicatif_present_soort2: {
+    aantalOpgaven: 10,
+    percentageVariant: 30,
+    // 2 = werkwoorden op -re (attendre, vendre, ...)
+    percentagesWerkwoorden: { "2": 100 },
+    drempelA: 8.5,
+    drempelB: 7.0,
+    typfoutMinLengte: 5
+  },
+
+  // ── Indicatif présent — soort 3 ──
+  indicatif_present_soort3: {
+    aantalOpgaven: 10,
+    percentageVariant: 30,
+    // 3a = type sortir, 3b = type finir, 3c = type ouvrir
+    percentagesWerkwoorden: { "3a": 40, "3b": 40, "3c": 20 },
+    drempelA: 8.5,
+    drempelB: 7.0,
+    typfoutMinLengte: 5
+  },
+
+  // ── Indicatif présent — soort 4 ──
+  indicatif_present_soort4: {
+    aantalOpgaven: 10,
+    percentageVariant: 30,
+    // 4 = onregelmatige werkwoorden (être, avoir, aller, ...)
+    percentagesWerkwoorden: { "4": 100 },
+    drempelA: 8.5,
+    drempelB: 7.0,
+    typfoutMinLengte: 5
+  },
+
+  // ── Indicatif présent — mix ──
+  indicatif_present_mix: {
+    aantalOpgaven: 10,
+    percentageVariant: 30,
+    // Alle werkwoordtypes gemengd — som moet 100 zijn
+    percentagesWerkwoorden: {
+      "1a": 20, "1b": 5, "1c": 5,
+      "2":  15,
+      "3a": 15, "3b": 15, "3c": 5,
+      "4":  20
+    },
+    drempelA: 8.5,
+    drempelB: 7.0,
+    typfoutMinLengte: 5
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// HULPFUNCTIE LOG
+// ══════════════════════════════════════════════════════════════
+function schrijf(tekst, klasse = '') {
+  const log = document.getElementById('log');
+  const regel = document.createElement('div');
+  regel.className = klasse;
+  regel.innerHTML = tekst;
+  log.appendChild(regel);
+  log.scrollTop = log.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════════════════
+// IMPORT ONDERWERPEN
+// ══════════════════════════════════════════════════════════════
+window.importeerOnderwerpen = async function() {
+  const btn = document.getElementById('btn-onderwerpen');
+  btn.disabled = true;
+  schrijf('⏳ Onderwerpen importeren...', 'info');
+
+  try {
+    await setDoc(doc(db, 'onderwerpen', 'personen'), onderwerpen);
+
+    for (const [persoon, data] of Object.entries(onderwerpen)) {
+      schrijf(`✓ ${persoon}: ${data.varianten.length} varianten (standaard: "${data.standaard}")`, 'ok');
+    }
+
+    schrijf('', '');
+    schrijf('✅ Onderwerpen succesvol geïmporteerd!', 'ok');
+
+  } catch(err) {
+    schrijf(`❌ Fout: ${err.message}`, 'fout');
+    btn.disabled = false;
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// IMPORT CONFIG
+// ══════════════════════════════════════════════════════════════
+window.importeerConfig = async function() {
+  const btn = document.getElementById('btn-config');
+  btn.disabled = true;
+  schrijf('⏳ Config importeren...', 'info');
+
+  try {
+    for (const [sleutel, instellingen] of Object.entries(config)) {
+      await setDoc(doc(db, 'config', sleutel), instellingen);
+      schrijf(`✓ ${sleutel} opgeslagen`, 'ok');
+    }
+
+    schrijf('', '');
+    schrijf('✅ Config succesvol geïmporteerd!', 'ok');
+    schrijf('Pas de waarden later aan via het dashboard.', 'info');
+
+  } catch(err) {
+    schrijf(`❌ Fout: ${err.message}`, 'fout');
+    btn.disabled = false;
+  }
+};
+</script>
+</body>
+</html>

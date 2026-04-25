@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<!-- ============================================================
+ index.html — Leerlingenpaneel Frans Oefenplatform
+============================================================ -->
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frans Oefenplatform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b27;
+      --surface2:#1e2436;
+      --border:  rgba(255,255,255,0.08);
+      --text:    #e8eaf0;
+      --muted:   #8891aa;
+      --blauw:   #1a2a5e;
+      --accent:  #3a5bd9;
+      --rood:    #c0392b;
+      --success: #4cbb8a;
+      --radius:  14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 15% 10%, rgba(58,91,217,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 85% 85%, rgba(192,57,43,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--blauw), var(--rood));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 20px rgba(58,91,217,0.3);
+      flex-shrink: 0;
+    }
+
+    .logo h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .logo span {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .groei-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #1e2e18, #1a2e22);
+      border: 1px solid rgba(76,187,138,0.3);
+      color: var(--success);
+      border-radius: 50px;
+      padding: 9px 18px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .groei-btn:hover {
+      border-color: rgba(76,187,138,0.6);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(76,187,138,0.2);
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 7px 16px 7px 7px;
+    }
+
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--blauw), var(--rood));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .user-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .logout-btn:hover {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    /* ── INTRO ── */
+    .intro {
+      margin-bottom: 32px;
+    }
+
+    .intro h2 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .intro h2 em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--accent), #7a9fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .intro p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* ── TIJDEN TABS ── */
+    .tijden-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 5px;
+      flex-wrap: wrap;
+    }
+
+    .tijd-tab {
+      flex: 1;
+      min-width: 140px;
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .tijd-tab:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    .tijd-tab.actief {
+      background: linear-gradient(135deg, var(--blauw), var(--accent));
+      color: white;
+      box-shadow: 0 2px 12px rgba(58,91,217,0.35);
+    }
+
+    /* ── TAB INHOUD ── */
+    .tab-inhoud {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-inhoud.actief {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTIE TITEL ── */
+    .sectie-titel {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sectie-titel::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── OEFENINGEN GRID ── */
+    .oefeningen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .oefening-kaart {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: all 0.22s;
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.35s ease both;
+    }
+
+    .oefening-kaart::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--kaart-kleur, var(--accent));
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .oefening-kaart:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,0.14);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .oefening-kaart:hover::before { opacity: 1; }
+
+    .kaart-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+      background: color-mix(in srgb, var(--kaart-kleur, var(--accent)) 15%, transparent);
+    }
+
+    .kaart-label {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .kaart-beschrijving {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── GEEN OEFENINGEN ── */
+    .geen-oefeningen {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 32px;
+      text-align: center;
+    }
+
+    .geen-oefeningen .groot-icon { font-size: 3rem; margin-bottom: 16px; }
+    .geen-oefeningen p { color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+    .geen-oefeningen strong { color: var(--text); }
+
+    /* ── LOADING ── */
+    .loading {
+      text-align: center;
+      padding: 80px 0;
+      color: var(--muted);
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      margin-top: 16px;
+    }
+
+    footer p { font-size: 0.78rem; color: var(--muted); }
+
+    @media (max-width: 600px) {
+      .intro h2 { font-size: 1.5rem; }
+      .oefeningen-grid { grid-template-columns: 1fr; }
+      .tijd-tab { min-width: 100px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🇫🇷</div>
+      <div>
+        <h1>Frans Oefenplatform</h1>
+        <span id="school-naam">Lab Sint-Niklaas</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="groei.html" class="groei-btn">📈 Mijn groei</a>
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span class="user-name" id="user-name">Laden...</span>
+      </div>
+      <button class="logout-btn" onclick="uitloggen()">Uitloggen</button>
+    </div>
+  </header>
+
+  <div class="intro">
+    <h2>Kies een <em>oefening</em></h2>
+    <p>Selecteer eerst een werkwoordtijd, kies daarna een oefening. Oefen regelmatig voor de beste resultaten.</p>
+  </div>
+
+  <!-- Tijden tabs -->
+  <div class="tijden-tabs" id="tijden-tabs">
+    <!-- Dynamisch gegenereerd vanuit TIJDEN in config.js -->
+  </div>
+
+  <!-- Tab inhoud (dynamisch) -->
+  <div id="tabs-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Oefeningen laden...</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>Oefen regelmatig — een beetje elke dag is beter dan alles op één dag.</p>
+  </footer>
+
+</div>
+
+<script type="module">
+import { db, TIJDEN } from './config.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// ── Login check ──
+const user = checkLogin();
+
+function checkLogin() {
+  const stored = localStorage.getItem('frans_user');
+  if (!stored) { window.location.href = 'login.html'; return null; }
+  try {
+    const u = JSON.parse(stored);
+    if (u.isAdmin) { window.location.href = 'dashboard.html'; return null; }
+    const naam = u.naam || u.email;
+    document.getElementById('user-name').textContent = naam;
+    document.getElementById('user-avatar').textContent = naam.charAt(0).toUpperCase();
+    return u;
+  } catch(e) {
+    localStorage.removeItem('frans_user');
+    window.location.href = 'login.html';
+    return null;
+  }
+}
+
+window.uitloggen = function() {
+  localStorage.removeItem('frans_user');
+  window.location.href = 'login.html';
+};
+
+// ── Init ──
+async function init() {
+  if (!user) return;
+
+  try {
+    // Haal leerlingdata op
+    const leerlingSnap = await getDoc(doc(db, 'leerlingen', user.email));
+    if (!leerlingSnap.exists()) { toonGeenOefeningen(); return; }
+
+    const leerlingData = leerlingSnap.data();
+    const groepIds = leerlingData.groepen || [];
+
+    if (!groepIds.length) { toonGeenOefeningen(); return; }
+
+    // Verzamel beschikbare oefensoorten via groepen
+    const beschikbareSoorten = new Set();
+    for (const groepId of groepIds) {
+      const groepSnap = await getDoc(doc(db, 'groepen', groepId));
+      if (groepSnap.exists()) {
+        (groepSnap.data().oefeningen || []).forEach(s => beschikbareSoorten.add(s));
+      }
+    }
+
+    if (!beschikbareSoorten.size) { toonGeenOefeningen(); return; }
+
+    // Bouw tabs en inhoud
+    bouwInterface(beschikbareSoorten);
+
+  } catch(err) {
+    console.error('Fout bij laden:', err);
+    toonGeenOefeningen();
+  }
+}
+
+// ── Interface bouwen ──
+function bouwInterface(beschikbareSoorten) {
+  const tabsBalk   = document.getElementById('tijden-tabs');
+  const container  = document.getElementById('tabs-container');
+
+  tabsBalk.innerHTML  = '';
+  container.innerHTML = '';
+
+  let eersteActief = false;
+
+  TIJDEN.forEach((tijd, tIdx) => {
+    // Filter oefeningen op beschikbare soorten
+    const beschikbareOef = tijd.oefeningen.filter(o => beschikbareSoorten.has(o.soort));
+    if (!beschikbareOef.length) return;
+
+    // Tab knop
+    const tabBtn = document.createElement('button');
+    tabBtn.className = 'tijd-tab' + (!eersteActief ? ' actief' : '');
+    tabBtn.textContent = tijd.label;
+    tabBtn.addEventListener('click', () => toonTab(tijd.id));
+    tabsBalk.appendChild(tabBtn);
+
+    // Tab inhoud
+    const tabDiv = document.createElement('div');
+    tabDiv.className = 'tab-inhoud' + (!eersteActief ? ' actief' : '');
+    tabDiv.id = 'tab-' + tijd.id;
+
+    const titelEl = document.createElement('p');
+    titelEl.className = 'sectie-titel';
+    titelEl.textContent = 'Beschikbare oefeningen';
+    tabDiv.appendChild(titelEl);
+
+    const grid = document.createElement('div');
+    grid.className = 'oefeningen-grid';
+
+    beschikbareOef.forEach((oef, oIdx) => {
+      const kaart = document.createElement('a');
+      kaart.className = 'oefening-kaart';
+      kaart.href = oef.url;
+      kaart.style.setProperty('--kaart-kleur', oef.kleur);
+      kaart.style.animationDelay = `${oIdx * 0.07}s`;
+      kaart.innerHTML = `
+        <div class="kaart-icon">${oef.icon}</div>
+        <div class="kaart-label">${oef.label}</div>
+        <div class="kaart-beschrijving">${oef.beschrijving}</div>
+      `;
+      grid.appendChild(kaart);
+    });
+
+    tabDiv.appendChild(grid);
+    container.appendChild(tabDiv);
+    eersteActief = true;
+  });
+
+  // Als er na filtering niets overblijft
+  if (!eersteActief) toonGeenOefeningen();
+}
+
+// ── Tab tonen ──
+function toonTab(tijdId) {
+  document.querySelectorAll('.tab-inhoud').forEach(t => t.classList.remove('actief'));
+  document.querySelectorAll('.tijd-tab').forEach(b => b.classList.remove('actief'));
+  const tab = document.getElementById('tab-' + tijdId);
+  if (tab) tab.classList.add('actief');
+  // Vind de juiste knop op basis van de tijd
+  const knoppen = document.querySelectorAll('.tijd-tab');
+  TIJDEN.forEach((tijd, idx) => {
+    if (tijd.id === tijdId && knoppen[idx]) knoppen[idx].classList.add('actief');
+  });
+}
+
+function toonGeenOefeningen() {
+  document.getElementById('tijden-tabs').innerHTML = '';
+  document.getElementById('tabs-container').innerHTML = `
+    <div class="geen-oefeningen">
+      <div class="groot-icon">📭</div>
+      <p><strong>Er zijn nog geen oefeningen beschikbaar.</strong></p>
+      <p>Neem contact op met je leerkracht.</p>
+    </div>`;
+}
+
+init();
+</script>
+
+</body>
+</html>

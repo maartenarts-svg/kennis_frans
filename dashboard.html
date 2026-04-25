@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<!-- ============================================================
+ dashboard.html — Beheerderspaneel Frans Oefenplatform
+============================================================ -->
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Frans Oefenplatform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161b27; --surface2: #1e2436;
+      --border: rgba(255,255,255,0.07); --text: #e8eaf0; --muted: #8891aa;
+      --blauw: #1a2a5e; --accent: #3a5bd9; --rood: #c0392b;
+      --success: #4cbb8a; --warning: #f5c842; --danger: #e05757;
+      --radius: 12px;
+      --score-a: #a8e6a1; --score-b: #fff4a3; --score-c: #ffcba4; --hoogte-a: 80px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* ── HEADER ── */
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 12px; }
+    h1 { font-size: 1.6rem; font-weight: 800; }
+    h1 span { color: var(--muted); font-weight: 400; font-size: 0.9rem; margin-left: 10px; }
+    .header-acties { display: flex; gap: 10px; align-items: center; }
+    .handleiding-link { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; transition: all 0.2s; }
+    .handleiding-link:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Outfit', sans-serif; }
+    .logout-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* ── WELKOM ── */
+    .welkom { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 44px 36px; margin-bottom: 0; animation: fadeIn 0.35s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .welkom h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; }
+    .welkom h2 em { font-style: normal; background: linear-gradient(90deg, var(--accent), #7a9fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .welkom p { color: var(--muted); font-size: 0.92rem; line-height: 1.7; margin-bottom: 28px; }
+    .welkom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
+    .welkom-kaart { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 20px 16px; cursor: pointer; transition: all 0.2s; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .welkom-kaart:hover { border-color: var(--accent); background: rgba(58,91,217,0.08); transform: translateY(-2px); }
+    .wk-icon { font-size: 1.8rem; }
+    .wk-label { font-size: 0.9rem; font-weight: 700; }
+    .wk-sub { font-size: 0.74rem; color: var(--muted); }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 4px; margin-bottom: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; flex-wrap: wrap; }
+    .tab-btn { flex: 1; min-width: 80px; padding: 9px 12px; background: none; border: none; border-radius: 7px; color: var(--muted); font-family: 'Outfit',sans-serif; font-size: 0.83rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .tab-btn:hover { color: var(--text); background: var(--surface2); }
+    .tab-btn.actief { background: linear-gradient(135deg, var(--blauw), var(--accent)); color: white; }
+    .tab-inhoud { display: none; }
+    .tab-inhoud.actief { display: block; }
+
+    /* ── SECTIE ── */
+    .sectie { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 24px; }
+    .sectie h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .sectie > p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; margin-bottom: 20px; }
+
+    /* ── UPLOAD ── */
+    .upload-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface2); }
+    .upload-zone:hover { border-color: var(--accent); background: rgba(58,91,217,0.05); }
+    .upload-zone.dragover { border-color: var(--accent); background: rgba(58,91,217,0.1); }
+    .upload-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .upload-zone input[type="file"] { display: none; }
+    .upload-label { font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .upload-hint { font-size: 0.82rem; color: var(--muted); }
+    .preview { margin-top: 20px; display: none; }
+    .preview.actief { display: block; }
+    .preview-titel { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.8px; }
+    .preview-tabel { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; overflow: auto; max-height: 300px; }
+
+    /* ── TABEL ── */
+    table { width: 100%; border-collapse: collapse; }
+    thead { position: sticky; top: 0; background: var(--surface2); z-index: 1; }
+    th { text-align: left; padding: 10px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+    td { padding: 10px 14px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+
+    /* ── KNOPPEN & INPUTS ── */
+    .btn { padding: 11px 20px; border: none; border-radius: 8px; font-family: 'Outfit',sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .btn-primair { background: var(--accent); color: white; }
+    .btn-primair:hover { opacity: 0.85; }
+    .btn-primair:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-secundair { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-secundair:hover { border-color: rgba(255,255,255,0.2); }
+    .btn-danger { background: rgba(224,87,87,0.15); color: var(--danger); border: 1px solid rgba(224,87,87,0.3); }
+    .btn-danger:hover { background: rgba(224,87,87,0.25); }
+    .btn-groen { background: rgba(76,187,138,0.15); color: var(--success); border: 1px solid rgba(76,187,138,0.3); }
+    .btn-groen:hover { background: rgba(76,187,138,0.25); }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+    .knoppen-rij { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .select-veld, .input-veld { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Outfit',sans-serif; font-size: 0.9rem; padding: 10px 14px; width: 100%; max-width: 400px; transition: border-color 0.2s; }
+    .select-veld:focus, .input-veld:focus { outline: none; border-color: var(--accent); }
+    .periode-select { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .datum-veld { display: flex; flex-direction: column; gap: 6px; }
+    .datum-veld label { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+
+    /* ── BERICHT ── */
+    .bericht { padding: 12px 16px; border-radius: 8px; font-size: 0.88rem; margin-top: 16px; display: none; }
+    .bericht.actief { display: block; }
+    .bericht.succes { background: rgba(76,187,138,0.12); border: 1px solid rgba(76,187,138,0.3); color: var(--success); }
+    .bericht.fout { background: rgba(224,87,87,0.1); border: 1px solid rgba(224,87,87,0.3); color: var(--danger); }
+    .bericht.info { background: rgba(58,91,217,0.1); border: 1px solid rgba(58,91,217,0.3); color: var(--accent); }
+
+    /* ── STATS ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat-kaart { background: var(--surface2); border-radius: 10px; padding: 16px; text-align: center; }
+    .stat-getal { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 6px; color: var(--accent); }
+    .stat-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+
+    /* ── GROEI ── */
+    .groei-tabel { margin-top: 20px; }
+    .groei-rij { display: flex; align-items: flex-end; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--border); }
+    .groei-rij:first-child { border-top: 1px solid var(--border); }
+    .type-naam { width: 260px; display: flex; align-items: center; gap: 10px; font-size: 0.92rem; font-weight: 600; flex-shrink: 0; }
+    .status-icon { font-size: 1.2rem; }
+    .scores-container { display: flex; align-items: flex-end; gap: 12px; flex-wrap: nowrap; flex: 1; overflow-x: auto; padding-bottom: 4px; }
+    .scores-container::-webkit-scrollbar { height: 4px; }
+    .scores-container::-webkit-scrollbar-track { background: var(--surface2); border-radius: 2px; }
+    .scores-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .score-blok { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+    .blok { width: 50px; display: flex; align-items: flex-end; justify-content: center; border-radius: 6px 6px 0 0; font-weight: 700; font-size: 1.1rem; padding-bottom: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .blok:hover { transform: translateY(-3px); }
+    .blok.score-a { background: var(--score-a); color: #2d5016; height: var(--hoogte-a); }
+    .blok.score-b { background: var(--score-b); color: #7a6c00; height: calc(var(--hoogte-a)*2/3); }
+    .blok.score-c { background: var(--score-c); color: #8b4513; height: calc(var(--hoogte-a)/3); min-height: 32px; }
+    .datum { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+    .leeg { text-align: center; padding: 36px 20px; color: var(--muted); font-style: italic; }
+
+    /* ── TIJDEN SUBTABS ── */
+    .subtabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+    .subtab-btn { padding: 7px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font-family: 'Outfit',sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .subtab-btn:hover { color: var(--text); }
+    .subtab-btn.actief { background: linear-gradient(135deg, var(--blauw), var(--accent)); color: white; border-color: transparent; }
+    .subtab-inhoud { display: none; }
+    .subtab-inhoud.actief { display: block; }
+
+    /* ── FILTERS & TAGS ── */
+    .filter-rij { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+    .filter-rij .input-veld, .filter-rij .select-veld { max-width: 190px; padding: 8px 12px; font-size: 0.85rem; }
+    .tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(58,91,217,0.15); color: var(--accent); border: 1px solid rgba(58,91,217,0.3); border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; }
+    .tag.groep { background: rgba(76,187,138,0.12); color: var(--success); border-color: rgba(76,187,138,0.3); }
+    .leerling-acties { display: flex; gap: 6px; }
+
+    /* ── GROEPENTABEL ── */
+    .oef-symbolen { display: flex; gap: 5px; flex-wrap: wrap; }
+    .oef-sym { display: inline-flex; align-items: center; gap: 3px; border-radius: 5px; padding: 3px 7px; font-size: 0.76rem; font-weight: 600; border: 1px solid; }
+    .oef-sym.aan { background: rgba(58,91,217,0.12); border-color: rgba(58,91,217,0.3); color: var(--accent); }
+    .oef-sym.uit { background: transparent; border-color: transparent; color: var(--muted); opacity: 0.35; }
+    .groepen-filter-rij { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .groepen-filter-rij .input-veld { max-width: 260px; padding: 8px 12px; font-size: 0.85rem; }
+    .nieuwe-groep-rij { display: flex; gap: 10px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
+    .nieuwe-groep-rij .input-veld { max-width: 260px; }
+
+    /* ── LEERLING FORM ── */
+    .leerling-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .leerling-form .form-groep { margin-bottom: 0; }
+    .leerling-form .form-groep.vol { grid-column: 1 / -1; }
+
+    /* ── INSTELLINGEN ── */
+    .instelling-sectie { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+    .instelling-sectie h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+    .instelling-rij { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .instelling-rij:last-child { border-bottom: none; padding-bottom: 0; }
+    .instelling-label { font-size: 0.88rem; color: var(--text); flex: 1; }
+    .instelling-sublabel { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .instelling-invoer { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-family: 'Outfit',sans-serif; font-size: 0.9rem; padding: 8px 12px; width: 100px; text-align: center; transition: border-color 0.2s; }
+    .instelling-invoer:focus { outline: none; border-color: var(--accent); }
+    .instelling-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+    .instelling-tab { padding: 8px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font-family: 'Outfit',sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .instelling-tab:hover { color: var(--text); }
+    .instelling-tab.actief { background: linear-gradient(135deg, var(--blauw), var(--accent)); color: white; border-color: transparent; }
+    .instelling-inhoud { display: none; }
+    .instelling-inhoud.actief { display: block; }
+
+    /* ── MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .modal-overlay.actief { opacity: 1; pointer-events: all; }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; transform: translateY(16px); transition: transform 0.2s; }
+    .modal-overlay.actief .modal { transform: translateY(0); }
+    .modal h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; }
+    .form-groep { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-groep label { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+    .form-groep .input-veld { max-width: 100%; }
+    .form-rij { display: flex; gap: 12px; }
+    .form-rij .form-groep { flex: 1; }
+    .modal-knoppen { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+    .groepen-checkboxes { display: flex; flex-direction: column; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 160px; overflow-y: auto; }
+    .groep-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; }
+    .groep-checkbox input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+    .oef-checkboxes-modal { display: flex; flex-direction: column; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+    .oef-cb-modal { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: background 0.15s; }
+    .oef-cb-modal:hover { background: rgba(255,255,255,0.04); }
+    .oef-cb-modal input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
+    /* ── WERKWOORDEN SELECTIE ── */
+    .ww-groep { margin-bottom: 14px; }
+    .ww-groep-titel { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .ww-groep-naam { font-size: 0.82rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px; }
+    .ww-alles-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 5px; padding: 3px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: 'Outfit',sans-serif; transition: all 0.15s; }
+    .ww-alles-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .ww-lijst { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+    .ww-cb { display: flex; align-items: center; gap: 7px; font-size: 0.83rem; cursor: pointer; padding: 3px 4px; border-radius: 4px; transition: background 0.15s; }
+    .ww-cb:hover { background: rgba(255,255,255,0.04); }
+    .ww-cb input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+    .ww-vertaling { color: var(--muted); font-size: 0.75rem; }
+
+    /* ── LEDEN MODAL ── */
+    .leden-filter { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .leden-filter .input-veld, .leden-filter .select-veld { flex: 1; min-width: 90px; max-width: 200px; padding: 7px 10px; font-size: 0.82rem; }
+    .leden-lijst { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; max-height: 300px; overflow-y: auto; }
+    .lid-rij { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); gap: 10px; }
+    .lid-rij:last-child { border-bottom: none; }
+    .lid-naam { font-size: 0.88rem; font-weight: 600; }
+    .lid-meta { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── DYSLEXIE TOGGLE ── */
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    .toggle { position: relative; width: 42px; height: 24px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 24px; cursor: pointer; transition: all 0.2s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: var(--muted); border-radius: 50%; transition: all 0.2s; }
+    .toggle input:checked + .toggle-slider { background: var(--accent); border-color: var(--accent); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); background: white; }
+
+    @media (max-width: 600px) {
+      .leerling-form { grid-template-columns: 1fr; }
+      .leerling-form .form-groep.vol { grid-column: 1; }
+      .filter-rij .input-veld, .filter-rij .select-veld { max-width: 100%; }
+      .welkom-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🇫🇷 Dashboard <span>Beheerder</span></h1>
+    <div class="header-acties">
+      <a href="handleiding.html" target="_blank" class="handleiding-link">📖 Handleiding</a>
+      <button class="logout-btn" onclick="uitloggen()">Uitloggen</button>
+    </div>
+  </header>
+
+  <!-- WELKOMSTSCHERM -->
+  <div class="welkom" id="welkom-scherm">
+    <h2>Welkom terug, <em>beheerder</em> 👋</h2>
+    <p>Kies hieronder wat je wil doen. Data wordt pas geladen wanneer je een sectie opent.</p>
+    <div class="welkom-grid">
+      <div class="welkom-kaart" onclick="toonTabVanaf('leerlingen')">
+        <div class="wk-icon">👥</div><div class="wk-label">Leerlingen</div><div class="wk-sub">Beheer leerlingen</div>
+      </div>
+      <div class="welkom-kaart" onclick="toonTabVanaf('groepen')">
+        <div class="wk-icon">🗂️</div><div class="wk-label">Groepen</div><div class="wk-sub">Groepen & oefeningen</div>
+      </div>
+      <div class="welkom-kaart" onclick="toonTabVanaf('import')">
+        <div class="wk-icon">📋</div><div class="wk-label">Importeren</div><div class="wk-sub">CSV-import</div>
+      </div>
+      <div class="welkom-kaart" onclick="toonTabVanaf('statistieken')">
+        <div class="wk-icon">📊</div><div class="wk-label">Statistieken</div><div class="wk-sub">Overzicht</div>
+      </div>
+      <div class="welkom-kaart" onclick="toonTabVanaf('scores')">
+        <div class="wk-icon">📥</div><div class="wk-label">Scorelijst</div><div class="wk-sub">Download CSV</div>
+      </div>
+      <div class="welkom-kaart" onclick="toonTabVanaf('instellingen')">
+        <div class="wk-icon">⚙️</div><div class="wk-label">Instellingen</div><div class="wk-sub">Oefenparameters</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs" id="tab-balk" style="display:none">
+    <button class="tab-btn" onclick="toonTab('welkom')">🏠</button>
+    <button class="tab-btn" id="tabbtn-leerlingen" onclick="toonTab('leerlingen')">👥 Leerlingen</button>
+    <button class="tab-btn" id="tabbtn-groepen" onclick="toonTab('groepen')">🗂️ Groepen</button>
+    <button class="tab-btn" id="tabbtn-import" onclick="toonTab('import')">📋 Importeren</button>
+    <button class="tab-btn" id="tabbtn-statistieken" onclick="toonTab('statistieken')">📊 Statistieken</button>
+    <button class="tab-btn" id="tabbtn-scores" onclick="toonTab('scores')">📥 Scorelijst</button>
+    <button class="tab-btn" id="tabbtn-instellingen" onclick="toonTab('instellingen')">⚙️ Instellingen</button>
+  </div>
+
+  <!-- TAB: LEERLINGEN -->
+  <div class="tab-inhoud" id="tab-leerlingen">
+    <div class="sectie">
+      <h2>➕ Leerling toevoegen</h2>
+      <div class="leerling-form">
+        <div class="form-groep vol"><label>E-mailadres</label><input type="email" id="nieuw-email" class="input-veld" placeholder="leerling@labsintniklaas.be" autocomplete="off"></div>
+        <div class="form-groep vol"><label>Naam</label><input type="text" id="nieuw-naam" class="input-veld" placeholder="Voornaam Achternaam" autocomplete="off"></div>
+        <div class="form-groep"><label>Jaar</label><input type="number" id="nieuw-jaar" class="input-veld" placeholder="1" min="1" max="7" autocomplete="off"></div>
+        <div class="form-groep"><label>Richting</label><input type="text" id="nieuw-richting" class="input-veld" placeholder="bijv. HuWe" autocomplete="off"></div>
+      </div>
+      <button class="btn btn-primair" onclick="voegLeerlingToe()">➕ Toevoegen</button>
+      <div class="bericht" id="toevoegen-bericht"></div>
+    </div>
+
+    <div class="sectie">
+      <h2>📋 Leerlingenlijst</h2>
+      <div class="filter-rij">
+        <input type="text" id="filter-naam" class="input-veld" placeholder="🔍 Naam of email..." oninput="filterLeerlingen()" autocomplete="off">
+        <select id="filter-jaar" class="select-veld" onchange="filterLeerlingen()"><option value="">Alle jaren</option></select>
+        <select id="filter-richting" class="select-veld" onchange="filterLeerlingen()"><option value="">Alle richtingen</option></select>
+        <select id="filter-groep" class="select-veld" onchange="filterLeerlingen()"><option value="">Alle groepen</option></select>
+      </div>
+      <div class="preview-tabel">
+        <table><thead><tr><th>Naam</th><th>E-mail</th><th>Jaar</th><th>Richting</th><th>Groepen</th><th>Hulp</th><th>Acties</th></tr></thead>
+        <tbody id="leerlingen-tbody"></tbody></table>
+      </div>
+      <div class="bericht" id="leerlingen-bericht"></div>
+    </div>
+
+    <div class="sectie">
+      <h2>👤 Leerling groei bekijken</h2>
+      <p>Selecteer een leerling om hun groei te bekijken.</p>
+      <div style="margin-bottom:16px"><select id="leerling-select" class="select-veld"><option value="">-- Selecteer een leerling --</option></select></div>
+      <div id="leerling-groei-container"></div>
+    </div>
+  </div>
+
+  <!-- TAB: GROEPEN -->
+  <div class="tab-inhoud" id="tab-groepen">
+    <div class="sectie">
+      <h2>🗂️ Groepenbeheer</h2>
+      <p>Overzicht van alle groepen. Gebruik ✏️ om naam en oefeningen te bewerken, ➕/➖ om leden te beheren.</p>
+      <div class="groepen-filter-rij">
+        <input type="text" id="groep-zoek" class="input-veld" placeholder="🔍 Zoek op naam..." oninput="filterGroepen()" autocomplete="off">
+      </div>
+      <div class="preview-tabel">
+        <table><thead><tr><th>Naam</th><th>Oefeningen</th><th>Leden</th><th>Acties</th></tr></thead>
+        <tbody id="groepen-tbody"></tbody></table>
+      </div>
+      <div class="nieuwe-groep-rij">
+        <input type="text" id="nieuwe-groep-naam" class="input-veld" placeholder="Naam van nieuwe groep..." autocomplete="off">
+        <button class="btn btn-primair" onclick="maakGroepAan()">➕ Groep aanmaken</button>
+      </div>
+      <div class="bericht" id="groepen-bericht"></div>
+    </div>
+  </div>
+
+  <!-- TAB: IMPORTEREN -->
+  <div class="tab-inhoud" id="tab-import">
+    <div class="sectie">
+      <h2>📋 Leerlingen importeren via CSV</h2>
+      <p>Upload een CSV-bestand met de kolommen: <strong>email, naam, jaar, richting</strong>. Scheidingsteken: komma.</p>
+      <button class="btn btn-secundair" onclick="downloadVoorbeeldCSV()" style="margin-bottom:16px">⬇️ Download voorbeeld-CSV</button>
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('csv-input').click()">
+        <div class="upload-icon">📄</div>
+        <div class="upload-label">Klik om CSV te selecteren</div>
+        <div class="upload-hint">of sleep het bestand hierheen</div>
+        <input type="file" id="csv-input" accept=".csv" autocomplete="off">
+      </div>
+      <div class="preview" id="preview">
+        <div class="preview-titel">Voorbeeld (eerste 10 rijen)</div>
+        <div class="preview-tabel">
+          <table><thead><tr><th>E-mail</th><th>Naam</th><th>Jaar</th><th>Richting</th></tr></thead><tbody id="preview-body"></tbody></table>
+        </div>
+        <div class="knoppen-rij">
+          <button class="btn btn-primair" id="upload-btn" disabled>Importeren naar Firebase</button>
+          <button class="btn btn-secundair" onclick="annuleren()">Annuleren</button>
+        </div>
+      </div>
+      <div class="bericht" id="upload-bericht"></div>
+    </div>
+  </div>
+
+  <!-- TAB: STATISTIEKEN -->
+  <div class="tab-inhoud" id="tab-statistieken">
+    <div class="sectie">
+      <h2>📊 Statistieken</h2>
+      <div class="stats-grid">
+        <div class="stat-kaart"><div class="stat-getal" id="stat-leerlingen">—</div><div class="stat-label">Leerlingen</div></div>
+        <div class="stat-kaart"><div class="stat-getal" id="stat-groepen">—</div><div class="stat-label">Groepen</div></div>
+        <div class="stat-kaart"><div class="stat-getal" id="stat-oefeningen">—</div><div class="stat-label">Totaal sessies</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: SCORELIJST -->
+  <div class="tab-inhoud" id="tab-scores">
+    <div class="sectie">
+      <h2>📥 Scorelijst downloaden</h2>
+      <p>Download een CSV-bestand met de evaluatiescores voor een bepaalde periode. Filter optioneel op groep.</p>
+      <div class="periode-select">
+        <div class="datum-veld"><label>Startdatum</label><input type="date" id="start-datum" class="input-veld" autocomplete="off"></div>
+        <div class="datum-veld"><label>Einddatum</label><input type="date" id="eind-datum" class="input-veld" autocomplete="off"></div>
+        <div class="datum-veld"><label>Groep</label><select id="score-groep-filter" class="select-veld"><option value="">Alle groepen</option></select></div>
+      </div>
+      <button class="btn btn-primair" onclick="downloadScorelijst()">📥 Download scorelijst (CSV)</button>
+      <div class="bericht" id="download-bericht"></div>
+    </div>
+  </div>
+
+  <!-- TAB: INSTELLINGEN -->
+  <div class="tab-inhoud" id="tab-instellingen">
+    <div class="sectie">
+      <h2>⚙️ Oefenparameters</h2>
+      <p>Pas hier de parameters per oefening aan. Klik op opslaan om de wijzigingen door te voeren.</p>
+      <div class="instelling-tabs" id="instelling-tabs"></div>
+      <div id="instelling-inhouden"></div>
+      <div class="bericht" id="instellingen-bericht"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL: LEERLING BEWERKEN -->
+<div class="modal-overlay" id="modal-leerling" onclick="sluitModal('modal-leerling',event)">
+  <div class="modal">
+    <h3>✏️ Leerling bewerken</h3>
+    <input type="hidden" id="modal-email">
+    <div class="form-groep"><label>Naam</label><input type="text" id="modal-naam" class="input-veld" autocomplete="off"></div>
+    <div class="form-rij">
+      <div class="form-groep"><label>Jaar</label><input type="number" id="modal-jaar" class="input-veld" min="1" max="7" autocomplete="off"></div>
+      <div class="form-groep"><label>Richting</label><input type="text" id="modal-richting" class="input-veld" autocomplete="off"></div>
+    </div>
+    <div class="form-groep"><label>Groepen</label><div class="groepen-checkboxes" id="modal-groepen"></div></div>
+    <div class="form-groep">
+      <label>Spellingshulp (rode golfjes)</label>
+      <div class="toggle-wrap">
+        <label class="toggle"><input type="checkbox" id="modal-spellingshulp"><span class="toggle-slider"></span></label>
+        <span style="font-size:0.85rem;color:var(--muted)">Aan/uit</span>
+      </div>
+    </div>
+    <div class="modal-knoppen">
+      <button class="btn btn-secundair" onclick="sluitModal('modal-leerling')">Annuleren</button>
+      <button class="btn btn-primair" onclick="slaModalOp()">Opslaan</button>
+    </div>
+    <div class="bericht" id="modal-bericht"></div>
+  </div>
+</div>
+
+<!-- MODAL: GROEP BEWERKEN -->
+<div class="modal-overlay" id="modal-groep" onclick="sluitModal('modal-groep',event)">
+  <div class="modal" style="max-width:620px">
+    <h3>✏️ Groep bewerken</h3>
+    <input type="hidden" id="groep-modal-id">
+    <div class="form-groep"><label>Naam</label><input type="text" id="groep-modal-naam" class="input-veld" autocomplete="off"></div>
+    <div class="form-groep"><label>Oefeningen</label><div class="oef-checkboxes-modal" id="groep-modal-oef"></div></div>
+    <div class="form-groep">
+      <label>Werkwoorden</label>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:10px">Selecteer de werkwoorden die deze groep mag oefenen. Gebruik "Alles selecteren" per type om snel te werken.</p>
+      <div id="groep-modal-werkwoorden"></div>
+    </div>
+    <div class="modal-knoppen">
+      <button class="btn btn-secundair" onclick="sluitModal('modal-groep')">Annuleren</button>
+      <button class="btn btn-primair" onclick="slaGroepModalOp()">Opslaan</button>
+    </div>
+    <div class="bericht" id="groep-modal-bericht"></div>
+  </div>
+</div>
+
+<!-- MODAL: LEDEN TOEVOEGEN -->
+<div class="modal-overlay" id="modal-leden-add" onclick="sluitModal('modal-leden-add',event)">
+  <div class="modal" style="max-width:600px">
+    <h3>➕ Leden toevoegen aan <em id="lt-groep-naam"></em></h3>
+    <input type="hidden" id="lt-groep-id">
+    <div class="leden-filter">
+      <input type="text" id="lt-zoek" class="input-veld" placeholder="🔍 Naam..." oninput="renderLedenAdd()" autocomplete="off">
+      <select id="lt-jaar" class="select-veld" onchange="renderLedenAdd()"><option value="">Alle jaren</option></select>
+      <select id="lt-richting" class="select-veld" onchange="renderLedenAdd()"><option value="">Alle richtingen</option></select>
+    </div>
+    <div class="leden-lijst" id="lt-lijst"></div>
+    <div class="modal-knoppen"><button class="btn btn-secundair" onclick="sluitModal('modal-leden-add')">Sluiten</button></div>
+    <div class="bericht" id="lt-bericht"></div>
+  </div>
+</div>
+
+<!-- MODAL: LEDEN VERWIJDEREN -->
+<div class="modal-overlay" id="modal-leden-del" onclick="sluitModal('modal-leden-del',event)">
+  <div class="modal" style="max-width:600px">
+    <h3>➖ Leden verwijderen uit <em id="lv-groep-naam"></em></h3>
+    <input type="hidden" id="lv-groep-id">
+    <div class="leden-filter">
+      <input type="text" id="lv-zoek" class="input-veld" placeholder="🔍 Naam..." oninput="renderLedenDel()" autocomplete="off">
+      <select id="lv-jaar" class="select-veld" onchange="renderLedenDel()"><option value="">Alle jaren</option></select>
+      <select id="lv-richting" class="select-veld" onchange="renderLedenDel()"><option value="">Alle richtingen</option></select>
+    </div>
+    <div class="leden-lijst" id="lv-lijst"></div>
+    <div class="modal-knoppen"><button class="btn btn-secundair" onclick="sluitModal('modal-leden-del')">Sluiten</button></div>
+    <div class="bericht" id="lv-bericht"></div>
+  </div>
+</div>
+
+<script type="module">
+import { db, TIJDEN } from './config.js';
+import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc }
+  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// ── LOGIN ──
+checkLogin();
+function checkLogin() {
+  const s = localStorage.getItem('frans_user');
+  if (!s) { window.location.href = 'login.html'; return; }
+  try {
+    const u = JSON.parse(s);
+    if (!u.isAdmin) { window.location.href = 'index.html'; }
+  } catch(e) { localStorage.removeItem('frans_user'); window.location.href = 'login.html'; }
+}
+window.uitloggen = () => { localStorage.removeItem('frans_user'); window.location.href = 'login.html'; };
+
+// ── STATE ──
+let alleLeerlingen = [], alleGroepen = [], leerlingenGeladen = false;
+
+// Verzamel alle oefening-soorten uit TIJDEN
+const ALLE_OEFENINGEN = TIJDEN.flatMap(t => t.oefeningen);
+
+// ── INIT ──
+(async () => { await laadGroepen(); laadStatistieken(); laadInstellingen(); })();
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+window.toonTabVanaf = function(naam) {
+  document.getElementById('welkom-scherm').style.display = 'none';
+  document.getElementById('tab-balk').style.display = 'flex';
+  activeerTab(naam);
+};
+
+window.toonTab = function(naam) {
+  if (naam === 'welkom') {
+    document.getElementById('welkom-scherm').style.display = 'block';
+    document.getElementById('tab-balk').style.display = 'none';
+    document.querySelectorAll('.tab-inhoud').forEach(t => t.classList.remove('actief'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('actief'));
+    return;
+  }
+  activeerTab(naam);
+};
+
+function activeerTab(naam) {
+  document.querySelectorAll('.tab-inhoud').forEach(t => t.classList.remove('actief'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('actief'));
+  document.getElementById('tab-' + naam).classList.add('actief');
+  const btn = document.getElementById('tabbtn-' + naam);
+  if (btn) btn.classList.add('actief');
+  if (naam === 'leerlingen' && !leerlingenGeladen) laadLeerlingen();
+  if (naam === 'groepen'    && !leerlingenGeladen) laadLeerlingen();
+}
+
+// ══════════════════════════════════════
+// GROEPEN
+// ══════════════════════════════════════
+async function laadGroepen() {
+  const snap = await getDocs(collection(db, 'groepen'));
+  alleGroepen = [];
+  snap.forEach(d => alleGroepen.push({ id: d.id, naam: d.data().naam, oefeningen: d.data().oefeningen || [], werkwoorden: d.data().werkwoorden || [] }));
+  alleGroepen.sort((a,b) => a.naam.localeCompare(b.naam));
+  renderGroepenTabel();
+  vulGroepenDropdowns();
+}
+
+function renderGroepenTabel(filter='') {
+  const tbody = document.getElementById('groepen-tbody');
+  if (!tbody) return;
+  const lijst = filter ? alleGroepen.filter(g => g.naam.toLowerCase().includes(filter.toLowerCase())) : alleGroepen;
+  if (!lijst.length) { tbody.innerHTML = `<tr><td colspan="4" class="leeg">Geen groepen gevonden.</td></tr>`; return; }
+
+  tbody.innerHTML = lijst.map(g => {
+    const syms = ALLE_OEFENINGEN.map(o =>
+      `<span class="oef-sym ${g.oefeningen.includes(o.soort)?'aan':'uit'}">${o.icon} ${o.label.split(' ')[0]}</span>`
+    ).join('');
+    const leden = leerlingenGeladen ? alleLeerlingen.filter(l=>(l.groepen||[]).includes(g.id)).length : '—';
+    return `<tr>
+      <td><strong>${g.naam}</strong></td>
+      <td><div class="oef-symbolen">${syms}</div></td>
+      <td>${leden}</td>
+      <td><div class="leerling-acties">
+        <button class="btn btn-secundair btn-sm" onclick="openGroepModal('${g.id}')">✏️</button>
+        <button class="btn btn-groen btn-sm" onclick="openLedenAdd('${g.id}')">➕</button>
+        <button class="btn btn-danger btn-sm" onclick="openLedenDel('${g.id}')">➖</button>
+        <button class="btn btn-danger btn-sm" onclick="verwijderGroep('${g.id}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+window.filterGroepen = () => renderGroepenTabel(document.getElementById('groep-zoek').value);
+
+window.maakGroepAan = async function() {
+  const naam = document.getElementById('nieuwe-groep-naam').value.trim();
+  if (!naam) { toonBericht('groepen-bericht','fout','Vul een naam in.'); return; }
+  try {
+    const ref = doc(collection(db,'groepen'));
+    await setDoc(ref, { naam, oefeningen: [] });
+    document.getElementById('nieuwe-groep-naam').value = '';
+    toonBericht('groepen-bericht','succes',`✓ Groep "${naam}" aangemaakt.`);
+    await laadGroepen(); laadStatistieken();
+  } catch(err) { toonBericht('groepen-bericht','fout',`Fout: ${err.message}`); }
+};
+
+window.verwijderGroep = async function(groepId) {
+  const g = alleGroepen.find(g=>g.id===groepId);
+  if (!confirm(`Groep "${g?.naam}" verwijderen?`)) return;
+  try {
+    await deleteDoc(doc(db,'groepen',groepId));
+    if (leerlingenGeladen) {
+      for (const l of alleLeerlingen.filter(l=>(l.groepen||[]).includes(groepId))) {
+        l.groepen = l.groepen.filter(gid=>gid!==groepId);
+        await updateDoc(doc(db,'leerlingen',l.email),{groepen:l.groepen});
+      }
+      renderLeerlingenTabel();
+    }
+    toonBericht('groepen-bericht','succes','✓ Groep verwijderd.');
+    await laadGroepen(); laadStatistieken();
+  } catch(err) { toonBericht('groepen-bericht','fout',`Fout: ${err.message}`); }
+};
+
+window.openGroepModal = async function(groepId) {
+  const g = alleGroepen.find(g=>g.id===groepId);
+  if (!g) return;
+  document.getElementById('groep-modal-id').value = groepId;
+  document.getElementById('groep-modal-naam').value = g.naam;
+  document.getElementById('groep-modal-oef').innerHTML = ALLE_OEFENINGEN.map(o=>`
+    <label class="oef-cb-modal">
+      <input type="checkbox" value="${o.soort}" ${g.oefeningen.includes(o.soort)?'checked':''}>
+      ${o.icon} ${o.label}
+    </label>`).join('');
+
+  // Laad werkwoorden uit Firestore en bouw selectie op
+  const wwContainer = document.getElementById('groep-modal-werkwoorden');
+  wwContainer.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Werkwoorden laden...</p>';
+
+  try {
+    const snap = await getDoc(doc(db, 'werkwoorden', 'indicatif_present'));
+    const data = snap.exists() ? snap.data() : {};
+    const geselecteerd = g.werkwoorden || [];
+
+    // Groepen met leesbare namen
+    const groepen = [
+      { sleutel: 'soort1a', naam: 'Gewone -er werkwoorden' },
+      { sleutel: 'soort1b', naam: 'Werkwoorden op -cer' },
+      { sleutel: 'soort1c', naam: 'Werkwoorden op -ger' },
+      { sleutel: 'soort2',  naam: 'Werkwoorden op -re' },
+      { sleutel: 'soort3a', naam: 'Type sortir (-ir, kortere stam)' },
+      { sleutel: 'soort3b', naam: 'Type finir (-ir, met -iss-)' },
+      { sleutel: 'soort3c', naam: 'Type ouvrir (-ir, als -er)' },
+      { sleutel: 'soort4',  naam: 'Onregelmatige werkwoorden' },
+      { sleutel: 'onpersoonlijk', naam: 'Onpersoonlijke werkwoorden' },
+    ];
+
+    wwContainer.innerHTML = groepen.map(gr => {
+      const lijst = (data[gr.sleutel] || [])
+        .slice()
+        .sort((a, b) => a.infinitief.localeCompare(b.infinitief));
+      if (!lijst.length) return '';
+      const wwId = `ww-groep-${gr.sleutel}`;
+      return `
+        <div class="ww-groep">
+          <div class="ww-groep-titel">
+            <span class="ww-groep-naam">${gr.naam}</span>
+            <button class="ww-alles-btn" onclick="selecteerAlles('${wwId}', this)">Alles selecteren</button>
+          </div>
+          <div class="ww-lijst" id="${wwId}">
+            ${lijst.map(ww => `
+              <label class="ww-cb">
+                <input type="checkbox" name="werkwoord" value="${ww.infinitief}"
+                  ${geselecteerd.includes(ww.infinitief) ? 'checked' : ''}>
+                <span>${ww.infinitief}</span>
+              </label>`).join('')}
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch(err) {
+    wwContainer.innerHTML = `<p style="color:var(--danger);font-size:0.85rem">Fout bij laden: ${err.message}</p>`;
+  }
+
+  verbergBericht('groep-modal-bericht');
+  document.getElementById('modal-groep').classList.add('actief');
+};
+
+window.selecteerAlles = function(containerId, btn) {
+  const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
+  const alleAan = [...checkboxes].every(cb => cb.checked);
+  checkboxes.forEach(cb => cb.checked = !alleAan);
+  btn.textContent = alleAan ? 'Alles selecteren' : 'Alles deselecteren';
+};
+
+window.slaGroepModalOp = async function() {
+  const id   = document.getElementById('groep-modal-id').value;
+  const naam = document.getElementById('groep-modal-naam').value.trim();
+  if (!naam) { toonBericht('groep-modal-bericht','fout','Naam is verplicht.'); return; }
+  const oef = [...document.querySelectorAll('#groep-modal-oef input:checked')].map(c=>c.value);
+  const werkwoorden = [...document.querySelectorAll('#groep-modal-werkwoorden input[name="werkwoord"]:checked')].map(c=>c.value);
+  if (!werkwoorden.length) { toonBericht('groep-modal-bericht','fout','Selecteer minstens één werkwoord.'); return; }
+  try {
+    await updateDoc(doc(db,'groepen',id),{naam, oefeningen:oef, werkwoorden});
+    const g = alleGroepen.find(g=>g.id===id);
+    if (g) { g.naam=naam; g.oefeningen=oef; g.werkwoorden=werkwoorden; }
+    toonBericht('groep-modal-bericht','succes','✓ Opgeslagen.');
+    renderGroepenTabel(document.getElementById('groep-zoek')?.value||'');
+    vulGroepenDropdowns();
+    setTimeout(()=>sluitModal('modal-groep'),700);
+  } catch(err) { toonBericht('groep-modal-bericht','fout',`Fout: ${err.message}`); }
+};
+
+// ── Leden toevoegen ──
+window.openLedenAdd = async function(groepId) {
+  if (!leerlingenGeladen) await laadLeerlingen();
+  const g = alleGroepen.find(g=>g.id===groepId);
+  document.getElementById('lt-groep-naam').textContent = g?.naam||'';
+  document.getElementById('lt-groep-id').value = groepId;
+  document.getElementById('lt-zoek').value='';
+  vulLedenFilters('lt-jaar','lt-richting');
+  renderLedenAdd();
+  verbergBericht('lt-bericht');
+  document.getElementById('modal-leden-add').classList.add('actief');
+};
+
+window.renderLedenAdd = function() {
+  const groepId  = document.getElementById('lt-groep-id').value;
+  const zoek     = document.getElementById('lt-zoek').value.toLowerCase();
+  const jaar     = document.getElementById('lt-jaar').value;
+  const richting = document.getElementById('lt-richting').value;
+  const lijst = alleLeerlingen.filter(l =>
+    !(l.groepen||[]).includes(groepId) &&
+    (!zoek || l.naam.toLowerCase().includes(zoek) || l.email.toLowerCase().includes(zoek)) &&
+    (!jaar || String(l.jaar)===jaar) && (!richting || l.richting===richting)
+  );
+  const el = document.getElementById('lt-lijst');
+  el.innerHTML = lijst.length ? lijst.map(l=>`
+    <div class="lid-rij">
+      <div><div class="lid-naam">${l.naam}</div><div class="lid-meta">${l.jaar||'—'} ${l.richting||''} · ${l.email}</div></div>
+      <button class="btn btn-groen btn-sm" onclick="voegLidToe('${l.email}','${groepId}')">➕</button>
+    </div>`).join('') : `<div class="leeg">Geen leerlingen gevonden.</div>`;
+};
+
+window.voegLidToe = async function(email, groepId) {
+  const l = alleLeerlingen.find(l=>l.email===email);
+  if (!l) return;
+  l.groepen = [...new Set([...(l.groepen||[]),groepId])];
+  try {
+    await updateDoc(doc(db,'leerlingen',email),{groepen:l.groepen});
+    toonBericht('lt-bericht','succes',`✓ ${l.naam} toegevoegd.`);
+    renderLedenAdd();
+    renderGroepenTabel(document.getElementById('groep-zoek')?.value||'');
+    renderLeerlingenTabel();
+  } catch(err) { toonBericht('lt-bericht','fout',`Fout: ${err.message}`); }
+};
+
+// ── Leden verwijderen ──
+window.openLedenDel = async function(groepId) {
+  if (!leerlingenGeladen) await laadLeerlingen();
+  const g = alleGroepen.find(g=>g.id===groepId);
+  document.getElementById('lv-groep-naam').textContent = g?.naam||'';
+  document.getElementById('lv-groep-id').value = groepId;
+  document.getElementById('lv-zoek').value='';
+  vulLedenFilters('lv-jaar','lv-richting');
+  renderLedenDel();
+  verbergBericht('lv-bericht');
+  document.getElementById('modal-leden-del').classList.add('actief');
+};
+
+window.renderLedenDel = function() {
+  const groepId  = document.getElementById('lv-groep-id').value;
+  const zoek     = document.getElementById('lv-zoek').value.toLowerCase();
+  const jaar     = document.getElementById('lv-jaar').value;
+  const richting = document.getElementById('lv-richting').value;
+  const lijst = alleLeerlingen.filter(l =>
+    (l.groepen||[]).includes(groepId) &&
+    (!zoek || l.naam.toLowerCase().includes(zoek) || l.email.toLowerCase().includes(zoek)) &&
+    (!jaar || String(l.jaar)===jaar) && (!richting || l.richting===richting)
+  );
+  const el = document.getElementById('lv-lijst');
+  el.innerHTML = lijst.length ? lijst.map(l=>`
+    <div class="lid-rij">
+      <div><div class="lid-naam">${l.naam}</div><div class="lid-meta">${l.jaar||'—'} ${l.richting||''} · ${l.email}</div></div>
+      <button class="btn btn-danger btn-sm" onclick="verwijderLid('${l.email}','${groepId}')">➖</button>
+    </div>`).join('') : `<div class="leeg">Geen leden gevonden.</div>`;
+};
+
+window.verwijderLid = async function(email, groepId) {
+  const l = alleLeerlingen.find(l=>l.email===email);
+  if (!l) return;
+  l.groepen = (l.groepen||[]).filter(gid=>gid!==groepId);
+  try {
+    await updateDoc(doc(db,'leerlingen',email),{groepen:l.groepen});
+    toonBericht('lv-bericht','succes',`✓ ${l.naam} verwijderd.`);
+    renderLedenDel();
+    renderGroepenTabel(document.getElementById('groep-zoek')?.value||'');
+    renderLeerlingenTabel();
+  } catch(err) { toonBericht('lv-bericht','fout',`Fout: ${err.message}`); }
+};
+
+function vulLedenFilters(jaarId,richtingId) {
+  const jaren     = [...new Set(alleLeerlingen.map(l=>l.jaar).filter(Boolean))].sort();
+  const richtingen = [...new Set(alleLeerlingen.map(l=>l.richting).filter(Boolean))].sort();
+  document.getElementById(jaarId).innerHTML     = '<option value="">Alle jaren</option>'+jaren.map(j=>`<option>${j}</option>`).join('');
+  document.getElementById(richtingId).innerHTML = '<option value="">Alle richtingen</option>'+richtingen.map(r=>`<option>${r}</option>`).join('');
+}
+
+// ══════════════════════════════════════
+// LEERLINGEN
+// ══════════════════════════════════════
+async function laadLeerlingen() {
+  const snap = await getDocs(collection(db,'leerlingen'));
+  alleLeerlingen = [];
+  snap.forEach(d => {
+    const data = d.data();
+    alleLeerlingen.push({
+      email: d.id, naam: data.naam||d.id, jaar: data.jaar||'',
+      richting: data.richting||'', groepen: data.groepen||[],
+      resultaten: data.resultaten||[],
+      spellingshulp: data.spellingshulp||false,
+      heeftDyslexie: data.heeftDyslexie||false
+    });
+  });
+  alleLeerlingen.sort((a,b)=>a.naam.localeCompare(b.naam));
+  leerlingenGeladen = true;
+  renderLeerlingenTabel();
+  vulFilterJaar(); vulFilterRichting(); vulLeerlingDropdown();
+  renderGroepenTabel(document.getElementById('groep-zoek')?.value||'');
+  laadStatistieken();
+}
+
+function renderLeerlingenTabel(lijst=null) {
+  lijst = lijst ?? alleLeerlingen;
+  const tbody = document.getElementById('leerlingen-tbody');
+  if (!tbody) return;
+  if (!lijst.length) { tbody.innerHTML=`<tr><td colspan="7" class="leeg">Geen leerlingen gevonden.</td></tr>`; return; }
+  tbody.innerHTML = lijst.map(l => {
+    const tags = (l.groepen||[]).map(gid=>alleGroepen.find(g=>g.id===gid)).filter(Boolean).map(g=>`<span class="tag groep">${g.naam}</span>`).join(' ');
+    const hulp = l.spellingshulp ? '<span class="tag">✓ spelling</span>' : '<span style="color:var(--muted);font-size:0.8rem">—</span>';
+    return `<tr>
+      <td><strong>${l.naam}</strong></td>
+      <td style="color:var(--muted);font-size:0.82rem">${l.email}</td>
+      <td>${l.jaar||'—'}</td><td>${l.richting||'—'}</td>
+      <td>${tags||'<span style="color:var(--muted);font-size:0.8rem">—</span>'}</td>
+      <td>${hulp}</td>
+      <td><div class="leerling-acties">
+        <button class="btn btn-secundair btn-sm" onclick="openModal('${l.email}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="verwijderLeerling('${l.email}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function vulFilterJaar() {
+  const jaren = [...new Set(alleLeerlingen.map(l=>l.jaar).filter(Boolean))].sort();
+  const sel = document.getElementById('filter-jaar'); const h=sel.value;
+  sel.innerHTML = '<option value="">Alle jaren</option>'+jaren.map(j=>`<option value="${j}" ${j==h?'selected':''}>${j}</option>`).join('');
+}
+function vulFilterRichting() {
+  const richtingen = [...new Set(alleLeerlingen.map(l=>l.richting).filter(Boolean))].sort();
+  const sel = document.getElementById('filter-richting'); const h=sel.value;
+  sel.innerHTML = '<option value="">Alle richtingen</option>'+richtingen.map(r=>`<option value="${r}" ${r===h?'selected':''}>${r}</option>`).join('');
+}
+function vulGroepenDropdowns() {
+  ['filter-groep','score-groep-filter'].forEach(id=>{
+    const sel=document.getElementById(id); if(!sel)return;
+    const h=sel.value;
+    sel.innerHTML='<option value="">Alle groepen</option>'+alleGroepen.map(g=>`<option value="${g.id}" ${g.id===h?'selected':''}>${g.naam}</option>`).join('');
+  });
+}
+
+window.filterLeerlingen = function() {
+  const zoek     = document.getElementById('filter-naam').value.toLowerCase();
+  const jaar     = document.getElementById('filter-jaar').value;
+  const richting = document.getElementById('filter-richting').value;
+  const groep    = document.getElementById('filter-groep').value;
+  renderLeerlingenTabel(alleLeerlingen.filter(l=>
+    (!zoek||l.naam.toLowerCase().includes(zoek)||l.email.toLowerCase().includes(zoek))&&
+    (!jaar||String(l.jaar)===jaar)&&(!richting||l.richting===richting)&&
+    (!groep||(l.groepen||[]).includes(groep))
+  ));
+};
+
+window.voegLeerlingToe = async function() {
+  const email   = document.getElementById('nieuw-email').value.trim().toLowerCase();
+  const naam    = document.getElementById('nieuw-naam').value.trim();
+  const jaar    = parseInt(document.getElementById('nieuw-jaar').value)||'';
+  const richting = document.getElementById('nieuw-richting').value.trim();
+  if (!email||!naam){toonBericht('toevoegen-bericht','fout','E-mail en naam zijn verplicht.');return;}
+  try {
+    await setDoc(doc(db,'leerlingen',email),{naam,jaar,richting,groepen:[],resultaten:[],spellingshulp:false,heeftDyslexie:false},{merge:true});
+    ['nieuw-email','nieuw-naam','nieuw-jaar','nieuw-richting'].forEach(id=>document.getElementById(id).value='');
+    toonBericht('toevoegen-bericht','succes',`✓ ${naam} toegevoegd.`);
+    await laadLeerlingen(); laadStatistieken();
+  }catch(err){toonBericht('toevoegen-bericht','fout',`Fout: ${err.message}`);}
+};
+
+window.verwijderLeerling = async function(email) {
+  const l=alleLeerlingen.find(l=>l.email===email);
+  if(!confirm(`Leerling "${l?.naam}" (${email}) verwijderen?`))return;
+  try {
+    await deleteDoc(doc(db,'leerlingen',email));
+    toonBericht('leerlingen-bericht','succes',`✓ ${l?.naam} verwijderd.`);
+    await laadLeerlingen(); laadStatistieken();
+  }catch(err){toonBericht('leerlingen-bericht','fout',`Fout: ${err.message}`);}
+};
+
+window.openModal = function(email) {
+  const l=alleLeerlingen.find(l=>l.email===email); if(!l)return;
+  document.getElementById('modal-email').value=email;
+  document.getElementById('modal-naam').value=l.naam;
+  document.getElementById('modal-jaar').value=l.jaar||'';
+  document.getElementById('modal-richting').value=l.richting||'';
+  document.getElementById('modal-spellingshulp').checked=l.spellingshulp||false;
+  document.getElementById('modal-groepen').innerHTML = alleGroepen.length
+    ? alleGroepen.map(g=>`<label class="groep-checkbox"><input type="checkbox" value="${g.id}" ${(l.groepen||[]).includes(g.id)?'checked':''}> ${g.naam}</label>`).join('')
+    : '<span style="color:var(--muted);font-size:0.85rem">Nog geen groepen.</span>';
+  verbergBericht('modal-bericht');
+  document.getElementById('modal-leerling').classList.add('actief');
+};
+
+window.slaModalOp = async function() {
+  const email        = document.getElementById('modal-email').value;
+  const naam         = document.getElementById('modal-naam').value.trim();
+  const jaar         = parseInt(document.getElementById('modal-jaar').value)||'';
+  const richting     = document.getElementById('modal-richting').value.trim();
+  const groepen      = [...document.querySelectorAll('#modal-groepen input:checked')].map(c=>c.value);
+  const spellingshulp = document.getElementById('modal-spellingshulp').checked;
+  if(!naam){toonBericht('modal-bericht','fout','Naam is verplicht.');return;}
+  try {
+    await updateDoc(doc(db,'leerlingen',email),{naam,jaar,richting,groepen,spellingshulp});
+    const l=alleLeerlingen.find(l=>l.email===email);
+    if(l){l.naam=naam;l.jaar=jaar;l.richting=richting;l.groepen=groepen;l.spellingshulp=spellingshulp;}
+    toonBericht('modal-bericht','succes','✓ Opgeslagen.');
+    renderLeerlingenTabel(); vulFilterJaar(); vulFilterRichting(); vulLeerlingDropdown();
+    setTimeout(()=>sluitModal('modal-leerling'),700);
+  }catch(err){toonBericht('modal-bericht','fout',`Fout: ${err.message}`);}
+};
+
+window.sluitModal = function(id,e) {
+  if(e&&e.target!==document.getElementById(id))return;
+  document.getElementById(id).classList.remove('actief');
+};
+
+// ── Groei dropdown ──
+function vulLeerlingDropdown() {
+  document.getElementById('leerling-select').innerHTML =
+    '<option value="">-- Selecteer een leerling --</option>'+
+    alleLeerlingen.map((l,i)=>`<option value="${i}">${l.naam}</option>`).join('');
+}
+
+document.getElementById('leerling-select').addEventListener('change', e => {
+  const idx = e.target.value;
+  const c   = document.getElementById('leerling-groei-container');
+  if (idx==='') { c.innerHTML=''; return; }
+  renderLeerlingGroei(alleLeerlingen[idx]);
+});
+
+function renderLeerlingGroei(leerling) {
+  const c          = document.getElementById('leerling-groei-container');
+  const resultaten = leerling.resultaten || [];
+
+  if (!resultaten.length) {
+    c.innerHTML = `<div class="leeg">Nog geen oefeningen gemaakt.</div>`;
+    return;
+  }
+
+  // Groepeer per soort, nieuwste eerst
+  const perSoort = {};
+  resultaten.forEach(r => {
+    if (!perSoort[r.soort]) perSoort[r.soort] = [];
+    perSoort[r.soort].push(r);
+  });
+  Object.keys(perSoort).forEach(s => perSoort[s].sort((a,b) => new Date(b.datum)-new Date(a.datum)));
+
+  // Bouw per tijd een sectie
+  let html = '';
+  TIJDEN.forEach(tijd => {
+    const oefInTijd = tijd.oefeningen.filter(o => perSoort[o.soort]?.length);
+    if (!oefInTijd.length) return;
+
+    html += `<p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin:20px 0 8px">${tijd.label}</p>`;
+    html += '<div class="groei-tabel">';
+
+    oefInTijd.forEach((oef, idx) => {
+      const scores   = perSoort[oef.soort] || [];
+      const laatste3 = scores.slice(0,3).map(s=>s.score);
+      let statusIcon = '❗';
+      if (laatste3.length>=3 && laatste3.every(s=>s==='A')) statusIcon='⭐';
+      else if (laatste3.length>=1 && !laatste3.includes('C')) statusIcon='😊';
+
+      let blokkenbHTML = '';
+      scores.forEach((s,si) => {
+        const d = new Date(s.datum);
+        const datumStr = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+        blokkenbHTML += `
+          <div class="score-blok" style="animation-delay:${idx*0.08+si*0.05}s">
+            <div class="blok score-${s.score.toLowerCase()}">${s.score}</div>
+            <div class="datum">${datumStr}</div>
+          </div>`;
+      });
+
+      html += `
+        <div class="groei-rij">
+          <div class="type-naam">
+            <span class="status-icon">${statusIcon}</span>
+            <span>${oef.icon} ${oef.label}</span>
+          </div>
+          <div class="scores-container">${blokkenbHTML}</div>
+        </div>`;
+    });
+
+    html += '</div>';
+  });
+
+  c.innerHTML = html || `<div class="leeg">Nog geen oefeningen gemaakt.</div>`;
+}
+
+// ══════════════════════════════════════
+// CSV IMPORT
+// ══════════════════════════════════════
+let csvData=[];
+const uploadZone=document.getElementById('upload-zone'), csvInput=document.getElementById('csv-input');
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('dragover');});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('dragover');if(e.dataTransfer.files[0])verwerkCSV(e.dataTransfer.files[0]);});
+csvInput.addEventListener('change',e=>{if(e.target.files[0])verwerkCSV(e.target.files[0]);});
+
+function verwerkCSV(file) {
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const regels=e.target.result.trim().split('\n'); csvData=[];
+      for(let i=1;i<regels.length;i++){
+        const r=regels[i].trim(); if(!r)continue;
+        const d=r.split(','); if(d.length<2)continue;
+        const email=d[0].trim().toLowerCase(),naam=d[1].trim(),jaar=parseInt(d[2])||'',richting=(d[3]||'').trim();
+        if(email&&naam)csvData.push({email,naam,jaar,richting});
+      }
+      if(!csvData.length)throw new Error('Geen geldige data gevonden');
+      const body=document.getElementById('preview-body'),btn=document.getElementById('upload-btn');
+      body.innerHTML=csvData.slice(0,10).map(x=>`<tr><td>${x.email}</td><td>${x.naam}</td><td>${x.jaar||'—'}</td><td>${x.richting||'—'}</td></tr>`).join('');
+      document.getElementById('preview').classList.add('actief');
+      btn.disabled=false; btn.textContent=`Importeren (${csvData.length} leerlingen)`;
+    }catch(err){toonBericht('upload-bericht','fout',`Fout: ${err.message}`);}
+  };
+  reader.readAsText(file);
+}
+
+window.annuleren=function(){
+  document.getElementById('preview').classList.remove('actief');
+  document.getElementById('csv-input').value=''; csvData=[];
+  verbergBericht('upload-bericht');
+};
+
+document.getElementById('upload-btn').addEventListener('click',async()=>{
+  const btn=document.getElementById('upload-btn');
+  btn.disabled=true; btn.textContent='Bezig...';
+  toonBericht('upload-bericht','info','Leerlingen worden toegevoegd...');
+  try {
+    let ok=0,fout=0;
+    for(const l of csvData){
+      try{await setDoc(doc(db,'leerlingen',l.email),{naam:l.naam,jaar:l.jaar,richting:l.richting,groepen:[],resultaten:[],spellingshulp:false,heeftDyslexie:false},{merge:true});ok++;}
+      catch(e){fout++;}
+    }
+    toonBericht('upload-bericht','succes',`✓ Import voltooid: ${ok} succesvol, ${fout} fouten.`);
+    annuleren(); if(leerlingenGeladen)await laadLeerlingen(); laadStatistieken();
+  }catch(err){toonBericht('upload-bericht','fout',`Fout: ${err.message}`);btn.disabled=false;btn.textContent=`Importeren (${csvData.length})`;}
+});
+
+window.downloadVoorbeeldCSV=function(){
+  const inhoud='email,naam,jaar,richting\nleerling1@labsintniklaas.be,Jan Peeters,1,HuWe\nleerling2@labsintniklaas.be,Emma De Smet,2,STEM\n';
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(new Blob([inhoud],{type:'text/csv;charset=utf-8;'}));
+  link.download='voorbeeld_leerlingen.csv'; link.click();
+};
+
+// ══════════════════════════════════════
+// STATISTIEKEN
+// ══════════════════════════════════════
+function laadStatistieken() {
+  document.getElementById('stat-leerlingen').textContent=leerlingenGeladen?alleLeerlingen.length:'—';
+  document.getElementById('stat-groepen').textContent=alleGroepen.length;
+  document.getElementById('stat-oefeningen').textContent=leerlingenGeladen?alleLeerlingen.reduce((s,l)=>s+(l.resultaten?.length||0),0):'—';
+}
+
+// ══════════════════════════════════════
+// SCORELIJST
+// ══════════════════════════════════════
+window.downloadScorelijst=async function(){
+  const startDatum=document.getElementById('start-datum').value;
+  const eindDatum =document.getElementById('eind-datum').value;
+  const groepFilter=document.getElementById('score-groep-filter').value;
+  const berichtEl='download-bericht';
+  if(!startDatum||!eindDatum){toonBericht(berichtEl,'fout','Selecteer een start- en einddatum.');return;}
+  const start=new Date(startDatum),eind=new Date(eindDatum); eind.setHours(23,59,59);
+  if(start>eind){toonBericht(berichtEl,'fout','Startdatum moet voor einddatum liggen.');return;}
+  toonBericht(berichtEl,'info','Scorelijst wordt gegenereerd...');
+  try {
+    let bronData;
+    if(leerlingenGeladen){bronData=alleLeerlingen;}
+    else{
+      const snap=await getDocs(collection(db,'leerlingen')); bronData=[];
+      snap.forEach(d=>{const data=d.data();bronData.push({email:d.id,naam:data.naam||d.id,groepen:data.groepen||[],resultaten:data.resultaten||[]});});
+    }
+    const gefilterd=groepFilter?bronData.filter(l=>(l.groepen||[]).includes(groepFilter)):bronData;
+    const groepNaam=groepFilter?(alleGroepen.find(g=>g.id===groepFilter)?.naam||groepFilter):'alle';
+
+    // Bouw CSV header op basis van TIJDEN en oefeningen
+    const oefKolommen = TIJDEN.flatMap(t => t.oefeningen.map(o => `${t.label} - ${o.label}`));
+    const csvHeader   = ['Email','Naam',...oefKolommen].join(',');
+
+    const rijen = gefilterd.map(l => {
+      const inPeriode = (l.resultaten||[]).filter(r => {
+        const d=new Date(r.datum); return d>=start&&d<=eind;
+      });
+      const scores = TIJDEN.flatMap(t => t.oefeningen.map(o => {
+        const s = inPeriode.filter(r=>r.soort===o.soort);
+        if (!s.length) return 'NI';
+        // Meest recente score in periode
+        s.sort((a,b)=>new Date(b.datum)-new Date(a.datum));
+        return s[0].score;
+      }));
+      return [l.email, l.naam, ...scores].join(',');
+    });
+
+    const csv  = [csvHeader,...rijen].join('\n');
+    const link = document.createElement('a');
+    link.href  = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+    link.setAttribute('download',`scorelijst_${groepNaam}_${startDatum}_${eindDatum}.csv`);
+    link.style.visibility='hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    toonBericht(berichtEl,'succes',`✓ Scorelijst gedownload (${gefilterd.length} leerlingen).`);
+  }catch(err){toonBericht(berichtEl,'fout',`Fout: ${err.message}`);}
+};
+
+// ══════════════════════════════════════
+// INSTELLINGEN
+// ══════════════════════════════════════
+async function laadInstellingen() {
+  const tabsEl    = document.getElementById('instelling-tabs');
+  const inhoudenEl = document.getElementById('instelling-inhouden');
+  if (!tabsEl || !inhoudenEl) return;
+
+  tabsEl.innerHTML    = '';
+  inhoudenEl.innerHTML = '';
+
+  let eersteActief = false;
+
+  for (const tijd of TIJDEN) {
+    for (const oef of tijd.oefeningen) {
+      const sleutel  = `${tijd.id}_${oef.soort}`;
+      const configId = `${tijd.id}_${oef.soort}`;
+      const actief   = !eersteActief;
+
+      // Tab knop
+      const btn = document.createElement('button');
+      btn.className = 'instelling-tab' + (actief ? ' actief' : '');
+      btn.textContent = `${oef.icon} ${oef.label}`;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.instelling-tab').forEach(b=>b.classList.remove('actief'));
+        document.querySelectorAll('.instelling-inhoud').forEach(i=>i.classList.remove('actief'));
+        btn.classList.add('actief');
+        document.getElementById('inst-' + sleutel).classList.add('actief');
+      });
+      tabsEl.appendChild(btn);
+
+      // Laad config
+      let cfg = {};
+      try {
+        const snap = await getDoc(doc(db, 'config', configId));
+        if (snap.exists()) cfg = snap.data();
+      } catch(e) {}
+
+      // Bouw inhoud
+      const div = document.createElement('div');
+      div.className = 'instelling-inhoud' + (actief ? ' actief' : '');
+      div.id = 'inst-' + sleutel;
+
+      // Subsoorten percentages
+      let subsoortHTML = '';
+      if (cfg.percentagesSubsoorten) {
+        subsoortHTML = Object.entries(cfg.percentagesSubsoorten).map(([sub, pct]) => `
+          <div class="instelling-rij">
+            <div class="instelling-label">
+              Percentage subsoort <strong>${sub}</strong>
+              <div class="instelling-sublabel">% van de vragen van dit subtype</div>
+            </div>
+            <input type="number" class="instelling-invoer" id="inst_${sleutel}_sub_${sub}" value="${pct}" min="0" max="100">
+          </div>`).join('');
+      }
+
+      div.innerHTML = `
+        <div class="instelling-sectie">
+          <h3>📝 Oefening</h3>
+          <div class="instelling-rij">
+            <div class="instelling-label">
+              Aantal opgaven per sessie
+              <div class="instelling-sublabel">Hoeveel vragen een leerling krijgt per oefening</div>
+            </div>
+            <input type="number" class="instelling-invoer" id="inst_${sleutel}_aantal" value="${cfg.aantalOpgaven||10}" min="5" max="30"
+              oninput="updateDrempelLabels('${sleutel}', this.value)">
+          </div>
+        </div>
+
+        <div class="instelling-sectie">
+          <h3>👤 Onderwerpen</h3>
+          <div class="instelling-rij">
+            <div class="instelling-label">
+              % varianten
+              <div class="instelling-sublabel">Kans dat een variant getoond wordt (bijv. "Pierre" i.p.v. "il/elle/on", "mes amis" i.p.v. "ils/elles"). Geldt voor 3e persoon enkelvoud en alle meervoudsvormen.</div>
+            </div>
+            <input type="number" class="instelling-invoer" id="inst_${sleutel}_variant" value="${cfg.percentageVariant??30}" min="0" max="100">
+          </div>
+        </div>
+
+        ${cfg.percentagesWerkwoorden && Object.keys(cfg.percentagesWerkwoorden).length > 1 ? `
+        <div class="instelling-sectie">
+          <h3>📚 Verdeling werkwoorden</h3>
+          <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">De som van alle percentages moet 100 zijn.</p>
+          ${Object.entries(cfg.percentagesWerkwoorden).map(([code, pct]) => `
+          <div class="instelling-rij">
+            <div class="instelling-label">
+              ${werkwoordLabel(code)}
+              <div class="instelling-sublabel">Code: ${code}</div>
+            </div>
+            <input type="number" class="instelling-invoer" id="inst_${sleutel}_ww_${code}" value="${pct}" min="0" max="100">
+          </div>`).join('')}
+        </div>` : ''}
+
+        <div class="instelling-sectie">
+          <h3>🎯 Scoring</h3>
+          <div class="instelling-rij">
+            <div class="instelling-label">
+              Drempel score A
+              <div class="instelling-sublabel" id="inst_${sleutel}_labelA">Minimum punten voor een A (op ${cfg.aantalOpgaven||10})</div>
+            </div>
+            <input type="number" class="instelling-invoer" id="inst_${sleutel}_drempelA" value="${cfg.drempelA??8.5}" min="0" max="10" step="0.5">
+          </div>
+          <div class="instelling-rij">
+            <div class="instelling-label">
+              Drempel score B
+              <div class="instelling-sublabel" id="inst_${sleutel}_labelB">Minimum punten voor een B (op ${cfg.aantalOpgaven||10})</div>
+            </div>
+            <input type="number" class="instelling-invoer" id="inst_${sleutel}_drempelB" value="${cfg.drempelB??7.0}" min="0" max="10" step="0.5">
+          </div>
+          <div class="instelling-rij">
+            <div class="instelling-label">
+              Min. lengte voor tikfouttolerantie
+              <div class="instelling-sublabel">Onregelmatige werkwoorden: minimum aantal letters voordat het systeem een kleine schrijffout als tikfout beschouwt. Korte vormen (ai, as, a, ...) worden altijd exact gecontroleerd.</div>
+            </div>
+            <input type="number" class="instelling-invoer" id="inst_${sleutel}_tikfout" value="${cfg.typfoutMinLengte??5}" min="3" max="10">
+          </div>
+        </div>
+        <button class="btn btn-primair" onclick="slaInstellingenOp('${configId}','${sleutel}')">💾 Opslaan</button>`;
+
+      inhoudenEl.appendChild(div);
+      eersteActief = true;
+    }
+  }
+}
+
+// ── Hulpfunctie: leesbaar label voor werkwoordcode ──
+function werkwoordLabel(code) {
+  const labels = {
+    '1a': 'Gewone -er werkwoorden (parler, trouver, ...)',
+    '1b': 'Werkwoorden op -cer (commencer, lancer, ...)',
+    '1c': 'Werkwoorden op -ger (manger, bouger, ...)',
+    '2':  'Werkwoorden op -re (attendre, vendre, ...)',
+    '3a': 'Type sortir — kortere stam in enkelvoud (sortir, dormir, partir, ...)',
+    '3b': 'Type finir — extra -iss- in meervoud (finir, choisir, grandir, ...)',
+    '3c': 'Type ouvrir — vervoegd als -er (ouvrir, offrir, découvrir, ...)',
+    '4':  'Onregelmatige werkwoorden (être, avoir, aller, ...)',
+  };
+  return labels[code] || code;
+}
+
+window.slaInstellingenOp = async function(configId, sleutel) {
+  const cfg = {};
+  const haal = (id, type='int') => {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    return type === 'float' ? parseFloat(el.value) : parseInt(el.value);
+  };
+
+  cfg.aantalOpgaven    = haal(`inst_${sleutel}_aantal`);
+  cfg.percentageVariant = haal(`inst_${sleutel}_variant`);
+  cfg.drempelA         = haal(`inst_${sleutel}_drempelA`, 'float');
+  cfg.drempelB         = haal(`inst_${sleutel}_drempelB`, 'float');
+  cfg.typfoutMinLengte = haal(`inst_${sleutel}_tikfout`);
+
+  // Werkwoordverdeling
+  const wwInputs = document.querySelectorAll(`[id^="inst_${sleutel}_ww_"]`);
+  if (wwInputs.length) {
+    cfg.percentagesWerkwoorden = {};
+    let som = 0;
+    wwInputs.forEach(el => {
+      const code = el.id.replace(`inst_${sleutel}_ww_`, '');
+      const waarde = parseInt(el.value) || 0;
+      cfg.percentagesWerkwoorden[code] = waarde;
+      som += waarde;
+    });
+    if (som !== 100) {
+      toonBericht('instellingen-bericht', 'fout', `⚠️ De som van de werkwoordpercentages is ${som}, maar moet 100 zijn.`);
+      return;
+    }
+  }
+
+  try {
+    await setDoc(doc(db, 'config', configId), cfg, { merge: true });
+    toonBericht('instellingen-bericht', 'succes', '✓ Instellingen opgeslagen.');
+  } catch(err) {
+    toonBericht('instellingen-bericht', 'fout', `Fout: ${err.message}`);
+  }
+};
+
+// ── HELPERS ──
+window.updateDrempelLabels = function(sleutel, aantal) {
+  const n = parseInt(aantal) || 10;
+  const lA = document.getElementById(`inst_${sleutel}_labelA`);
+  const lB = document.getElementById(`inst_${sleutel}_labelB`);
+  if (lA) lA.textContent = `Minimum punten voor een A (op ${n})`;
+  if (lB) lB.textContent = `Minimum punten voor een B (op ${n})`;
+};
+function toonBericht(id,type,tekst){const el=document.getElementById(id);if(!el)return;el.className=`bericht actief ${type}`;el.textContent=tekst;}
+function verbergBericht(id){const el=document.getElementById(id);if(el)el.classList.remove('actief');}
+</script>
+</body>
+</html>

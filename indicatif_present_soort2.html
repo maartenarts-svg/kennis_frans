@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<!-- ============================================================
+ indicatif_present_soort2.html
+ Oefening: Indicatif présent — werkwoorden op -re (soort 2)
+============================================================ -->
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indicatif présent — Werkwoorden op -re</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./grammatica/grammatica.css">
+  <style>
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b27;
+      --surface2:#1e2436;
+      --border:  rgba(255,255,255,0.08);
+      --text:    #e8eaf0;
+      --muted:   #8891aa;
+      --blauw:   #1a2a5e;
+      --accent:  #3a5bd9;
+      --rood:    #c0392b;
+      --success: #4cbb8a;
+      --danger:  #e05757;
+      --warning: #f5c542;
+      --radius:  14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(58,91,217,0.10) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 80%, rgba(192,57,43,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    .page-title h1 { font-size: 1.3rem; font-weight: 800; }
+    .page-title span { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── VOORTGANGSBALK ── */
+    .progress-wrap { margin-bottom: 28px; }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .progress-track {
+      height: 8px;
+      background: var(--surface);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #7a9fff);
+      border-radius: 99px;
+      transition: width 0.5s cubic-bezier(.4,0,.2,1);
+      width: 0%;
+    }
+
+    /* ── OEFENING KAART ── */
+    .oefening-kaart {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .vraag-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    /* ── VRAAG RIJ ── */
+    .vraag-rij {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+
+    .onderwerp {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .invoer {
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      width: 240px;
+      text-align: center;
+    }
+
+    .invoer:focus {
+      border-color: var(--accent);
+      background: rgba(58,91,217,0.06);
+    }
+
+    .invoer.correct {
+      border-color: var(--success);
+      background: rgba(76,187,138,0.1);
+      color: var(--success);
+    }
+
+    .invoer.tikfout {
+      border-color: var(--warning);
+      background: rgba(245,197,66,0.08);
+      color: var(--warning);
+    }
+
+    .invoer.fout {
+      border-color: var(--danger);
+      background: rgba(224,87,87,0.1);
+      color: var(--danger);
+    }
+
+    .invoer:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .infinitief {
+      font-size: 1.1rem;
+      color: var(--muted);
+      font-style: italic;
+      white-space: nowrap;
+    }
+
+    /* ── SPECIALE TEKENS BALK ── */
+    .tekens-balk {
+      display: none;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      animation: fadeIn 0.15s ease;
+    }
+
+    .tekens-balk.zichtbaar { display: flex; }
+
+    .teken-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      min-width: 34px;
+      text-align: center;
+    }
+
+    .teken-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    /* ── KNOPPEN ── */
+    .knoppen-rij {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .btn {
+      padding: 12px 22px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .btn-primair { background: var(--accent); color: white; }
+    .btn-primair:not(:disabled):hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .btn-succes { background: var(--success); color: #0c2e1c; }
+    .btn-succes:not(:disabled):hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ── FEEDBACK ── */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .feedback-box.succes {
+      background: rgba(76,187,138,0.1);
+      border: 1px solid rgba(76,187,138,0.3);
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .feedback-box.tikfout {
+      background: rgba(245,197,66,0.08);
+      border: 1px solid rgba(245,197,66,0.3);
+      color: var(--warning);
+    }
+
+    .feedback-box.fout {
+      background: rgba(224,87,87,0.09);
+      border: 1px solid rgba(224,87,87,0.3);
+      color: var(--danger);
+    }
+
+    /* ── GRAMMATICA BLOK ── */
+    .grammatica-blok {
+      margin-top: 16px;
+      background: var(--surface2);
+      border: 1px solid rgba(58,91,217,0.2);
+      border-radius: 10px;
+      padding: 20px;
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    /* ── EINDSCHERM ── */
+    .eindscherm {
+      text-align: center;
+      padding: 48px 24px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .eind-emoji { font-size: 3.5rem; margin-bottom: 16px; }
+    .eind-punten { font-size: 3rem; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
+    .eind-score-label { font-size: 1rem; color: var(--muted); margin-bottom: 16px; }
+
+    .score-badge {
+      display: inline-block;
+      font-size: 2rem;
+      font-weight: 800;
+      padding: 10px 32px;
+      border-radius: 12px;
+      margin-bottom: 28px;
+    }
+
+    .score-badge.A { background: rgba(168,230,161,0.15); color: #a8e6a1; border: 2px solid rgba(168,230,161,0.4); }
+    .score-badge.B { background: rgba(255,244,163,0.12); color: #fff4a3; border: 2px solid rgba(255,244,163,0.35); }
+    .score-badge.C { background: rgba(255,203,164,0.12); color: #ffcba4; border: 2px solid rgba(255,203,164,0.35); }
+
+    .eind-bericht { font-size: 1rem; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+    @media (max-width: 600px) {
+      .onderwerp { font-size: 1.3rem; }
+      .invoer { width: 180px; font-size: 1.2rem; }
+      .infinitief { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a href="index.html" class="back-btn">← Terug naar oefeningen</a>
+    <div class="page-title">
+      <h1>🟢 Werkwoorden op -re</h1>
+      <span id="user-label">Laden...</span>
+    </div>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="progress-tekst">Vraag 1 van 10</span>
+      <span id="score-live">0 / 0 pt</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div id="inhoud"></div>
+
+</div>
+
+<script type="module">
+import { db } from './config.js';
+import { grammaticaHTML } from './grammatica/indicatif_present_soort2.js';
+import {
+  doc, getDoc, updateDoc, arrayUnion
+} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// ── Constanten ──
+const SOORT           = 'soort2';
+const SPECIALE_TEKENS = ['ë','é','è','ê','ï','î','ô','œ','ü','û','ù','à','â','ç'];
+
+// ── Persoonsverdeling ──
+const PERSOON_VERDELING = [
+  ['1s', 1], ['2s', 1], ['3s', 2], ['1p', 2], ['2p', 2], ['3p', 2]
+];
+
+const PERSOON_NAAR_VERVOEGING = {
+  '1s': 'je', '2s': 'tu', '3s': 'il', '1p': 'nous', '2p': 'vous', '3p': 'ils'
+};
+
+// ── State ──
+let user        = null;
+let config      = {};
+let werkwoorden = [];
+let onderwerpen = {};
+let vragen      = [];
+let huidigeIdx  = 0;
+let punten      = 0;
+let pogingTeller = 0;
+
+// ── Login check ──
+function checkLogin() {
+  const stored = localStorage.getItem('frans_user');
+  if (!stored) { window.location.href = 'login.html'; return null; }
+  try {
+    const u = JSON.parse(stored);
+    if (u.isAdmin) { window.location.href = 'dashboard.html'; return null; }
+    document.getElementById('user-label').textContent = u.naam || u.email;
+    return u;
+  } catch(e) {
+    localStorage.removeItem('frans_user');
+    window.location.href = 'login.html';
+    return null;
+  }
+}
+
+// ── Levenshtein afstand ──
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m+1}, (_, i) => [i, ...Array(n).fill(0)]);
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+// ── Tikfout detectie voor soort2 ──
+// Uitgangen: -s (je/tu), geen uitgang (il), -ons, -ez, -ent
+// il-vorm: stam alleen → Levenshtein op volledige vorm
+function isTikfout(antwoord, correct) {
+  if (antwoord === correct) return false;
+
+  // il-vorm heeft geen uitgang → Levenshtein op volledige vorm
+  const ilVormen = ['ons', 'ez', 'ent', 's'];
+  const heeftUitgang = ilVormen.some(u => correct.endsWith(u));
+  if (!heeftUitgang) {
+    return levenshtein(antwoord, correct) <= 1;
+  }
+
+  // Andere vormen: uitgang exact, stam met tolerantie
+  const uitgangen = ['ons', 'ez', 'ent', 's'];
+  let uitgang = '';
+  for (const u of uitgangen) {
+    if (correct.endsWith(u)) { uitgang = u; break; }
+  }
+  if (!uitgang) return levenshtein(antwoord, correct) <= 1;
+  if (!antwoord.endsWith(uitgang)) return false;
+  const stamCorrect  = correct.slice(0, correct.length - uitgang.length);
+  const stamAntwoord = antwoord.slice(0, antwoord.length - uitgang.length);
+  return levenshtein(stamCorrect, stamAntwoord) <= 1;
+}
+
+// ── Hulpfuncties ──
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function kiesPersoon(gebruikteCombi) {
+  const totaalGewicht = PERSOON_VERDELING.reduce((s, [, g]) => s + g, 0);
+  for (let poging = 0; poging < 100; poging++) {
+    let r = Math.random() * totaalGewicht;
+    let gekozen = PERSOON_VERDELING[PERSOON_VERDELING.length - 1][0];
+    for (const [persoon, gewicht] of PERSOON_VERDELING) {
+      r -= gewicht;
+      if (r <= 0) { gekozen = persoon; break; }
+    }
+    const beschikbaar = werkwoorden.some(w =>
+      !gebruikteCombi.has(`${w.infinitief}__${gekozen}`)
+    );
+    if (beschikbaar) return gekozen;
+  }
+  return null;
+}
+
+function kiesOnderwerp(persoon, percentageVariant) {
+  const data = onderwerpen[persoon];
+  if (!data) return persoon;
+  if (persoon === '1s' || persoon === '2s') return data.standaard;
+  if (Math.random() * 100 < percentageVariant) {
+    const varianten = data.varianten.filter(v => v !== data.standaard);
+    if (!varianten.length) return data.standaard;
+    return varianten[rand(0, varianten.length - 1)];
+  }
+  return data.standaard;
+}
+
+function bouwVraag(werkwoord, persoon, pctStandaard, gebruikteCombi) {
+  const combiSleutel = `${werkwoord.infinitief}__${persoon}`;
+  if (gebruikteCombi.has(combiSleutel)) return null;
+  gebruikteCombi.add(combiSleutel);
+
+  const onderwerp   = kiesOnderwerp(persoon, pctStandaard);
+  const vervSleutel = PERSOON_NAAR_VERVOEGING[persoon];
+  const vervoeging  = werkwoord.vervoegingen[vervSleutel];
+
+  // Elisie
+  let onderwerpTonen = onderwerp;
+  if (persoon === '1s' && /^[aeiouyéèêëàâùûüœhî]/i.test(vervoeging)) {
+    if (onderwerp === 'je') onderwerpTonen = "j'";
+  }
+
+  return {
+    werkwoord, subsoort: 'soort2', persoon,
+    onderwerp: onderwerpTonen, vervoeging,
+    infinitief: werkwoord.infinitief,
+    vertaling:  werkwoord.vertaling,
+    grammatica: werkwoord.grammatica
+  };
+}
+
+// ── Genereer vragen ──
+function genereer() {
+  const totaal       = config.aantalOpgaven || 10;
+  const pctVariant   = config.percentageVariant ?? 30;
+  const gebruikteCombi = new Set();
+  const lijst        = [];
+  let pogingen       = 0;
+
+  while (lijst.length < totaal && pogingen < 300) {
+    pogingen++;
+    const werkwoord = werkwoorden[rand(0, werkwoorden.length - 1)];
+    const persoon   = kiesPersoon(gebruikteCombi);
+    if (!persoon) break;
+    const vraag = bouwVraag(werkwoord, persoon, pctVariant, gebruikteCombi);
+    if (vraag) lijst.push(vraag);
+  }
+
+  // Schud door elkaar
+  for (let i = lijst.length - 1; i > 0; i--) {
+    const j = rand(0, i);
+    [lijst[i], lijst[j]] = [lijst[j], lijst[i]];
+  }
+
+  return lijst;
+}
+
+// ── Voortgang updaten ──
+function updateVoortgang() {
+  const totaal = vragen.length;
+  const pct    = (huidigeIdx / totaal) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-tekst').textContent =
+    huidigeIdx < totaal ? `Vraag ${huidigeIdx + 1} van ${totaal}` : 'Klaar!';
+  document.getElementById('score-live').textContent = `${punten} / ${huidigeIdx} pt`;
+}
+
+// ── Vraag tonen ──
+function toonVraag() {
+  if (huidigeIdx >= vragen.length) { toonEindscherm(); return; }
+
+  pogingTeller = 0;
+  updateVoortgang();
+  const vraag = vragen[huidigeIdx];
+
+  document.getElementById('inhoud').innerHTML = `
+    <div class="oefening-kaart" id="oef-kaart">
+      <p class="vraag-label">Vul de juiste vervoeging in</p>
+
+      <div class="vraag-rij">
+        <span class="onderwerp">${vraag.onderwerp}</span>
+        <input
+          class="invoer"
+          id="invoer"
+          type="text"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          inputmode="text"
+        >
+        <span class="infinitief">(${vraag.infinitief})</span>
+      </div>
+      <div class="tekens-balk" id="tekens-balk">
+        ${SPECIALE_TEKENS.map(t =>
+          `<button class="teken-btn" tabindex="-1" onclick="voegTekenIn('${t}')">${t}</button>`
+        ).join('')}
+      </div>
+
+      <div class="knoppen-rij">
+        <button class="btn btn-primair" id="controleer-btn" disabled>Controleer</button>
+        <button class="btn btn-succes" id="volgende-btn" style="display:none">Volgende vraag →</button>
+      </div>
+
+      <div class="feedback-box" id="feedback-box"></div>
+      <div class="grammatica-blok" id="grammatica-blok"></div>
+    </div>`;
+
+  const invoer        = document.getElementById('invoer');
+  const controleerBtn = document.getElementById('controleer-btn');
+  const tekensBalk    = document.getElementById('tekens-balk');
+
+  invoer.addEventListener('input', () => {
+    controleerBtn.disabled = invoer.value.trim() === '';
+    if (user.spellingshulp) {
+      const ant = invoer.value.trim().toLowerCase();
+      const cor = vragen[huidigeIdx].vervoeging.toLowerCase();
+      invoer.style.textDecoration =
+        ant.length >= 2 && ant !== cor && levenshtein(ant, cor) > 2
+          ? 'underline wavy red' : '';
+    }
+  });
+
+  invoer.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !controleerBtn.disabled) controleer();
+  });
+
+  invoer.addEventListener('focus', () => tekensBalk.classList.add('zichtbaar'));
+
+  controleerBtn.addEventListener('click', controleer);
+  document.getElementById('volgende-btn').addEventListener('click', () => toonVraag());
+
+  invoer.focus();
+}
+
+// ── Teken invoegen ──
+window.voegTekenIn = function(teken) {
+  const invoer = document.getElementById('invoer');
+  if (!invoer) return;
+  const start = invoer.selectionStart;
+  const einde = invoer.selectionEnd;
+  invoer.value = invoer.value.slice(0, start) + teken + invoer.value.slice(einde);
+  invoer.selectionStart = invoer.selectionEnd = start + teken.length;
+  invoer.focus();
+  invoer.dispatchEvent(new Event('input'));
+  document.getElementById('controleer-btn').disabled = invoer.value.trim() === '';
+};
+
+// ── Controleer antwoord ──
+function controleer() {
+  const vraag         = vragen[huidigeIdx];
+  const invoer        = document.getElementById('invoer');
+  const fbBox         = document.getElementById('feedback-box');
+  const grBlok        = document.getElementById('grammatica-blok');
+  const controleerBtn = document.getElementById('controleer-btn');
+  const volgendeBtn   = document.getElementById('volgende-btn');
+
+  const antwoord = invoer.value.trim();
+  const correct  = vraag.vervoeging;
+
+  const isCorrect  = antwoord.toLowerCase() === correct.toLowerCase();
+  const isTikfoutB = !isCorrect && isTikfout(antwoord.toLowerCase(), correct.toLowerCase());
+
+  // ── CORRECT ──
+  if (isCorrect) {
+    invoer.classList.add('correct');
+    invoer.style.textDecoration = '';
+    punten += pogingTeller === 0 ? 1 : 0.5;
+    huidigeIdx++;
+    fbBox.className = 'feedback-box succes';
+    fbBox.innerHTML = pogingTeller === 0
+      ? '✅ Correct! Goed gedaan!'
+      : '✅ Correct bij de tweede kans!';
+    fbBox.style.display = 'block';
+    controleerBtn.style.display = 'none';
+    volgendeBtn.style.display   = 'inline-block';
+    invoer.disabled = true;
+    updateVoortgang();
+    return;
+  }
+
+  // ── TIKFOUT (eerste poging) ──
+  if (isTikfoutB && pogingTeller === 0) {
+    invoer.classList.add('tikfout');
+    invoer.style.textDecoration = '';
+    fbBox.className = 'feedback-box tikfout';
+    fbBox.innerHTML = '⚠️ Je antwoord bevat een tikfout. Probeer opnieuw.';
+    fbBox.style.display = 'block';
+    pogingTeller = 1;
+    setTimeout(() => {
+      invoer.classList.remove('tikfout');
+      invoer.disabled = false;
+      invoer.focus();
+      controleerBtn.disabled = false;
+    }, 800);
+    return;
+  }
+
+  // ── GROTE FOUT ──
+  invoer.classList.add('fout');
+  invoer.style.textDecoration = '';
+  huidigeIdx++;
+  fbBox.className = 'feedback-box fout';
+  fbBox.innerHTML = `❌ Het juiste antwoord is <strong>${correct}</strong>.`;
+  fbBox.style.display = 'block';
+  grBlok.innerHTML    = grammaticaHTML(vraag.werkwoord);
+  grBlok.style.display = 'block';
+  controleerBtn.style.display = 'none';
+  volgendeBtn.style.display   = 'inline-block';
+  invoer.disabled = true;
+  updateVoortgang();
+}
+
+// ── Eindscherm ──
+function toonEindscherm() {
+  updateVoortgang();
+  const drempelA = config.drempelA ?? 8.5;
+  const drempelB = config.drempelB ?? 7.0;
+  const totaal   = vragen.length;
+
+  let algScore, emoji, bericht;
+  if (punten >= drempelA) {
+    algScore = 'A'; emoji = '🌟';
+    bericht  = 'Uitstekend! Je beheerst de werkwoorden op -re heel goed.';
+  } else if (punten >= drempelB) {
+    algScore = 'B'; emoji = '😊';
+    bericht  = 'Goed gedaan! Je bent goed op weg. Blijf oefenen!';
+  } else {
+    algScore = 'C'; emoji = '📚';
+    bericht  = 'Oefen nog wat verder. Je kan dit zeker verbeteren!';
+  }
+
+  document.getElementById('inhoud').innerHTML = `
+    <div class="eindscherm">
+      <div class="eind-emoji">${emoji}</div>
+      <div class="eind-punten">${punten}/${totaal}</div>
+      <div class="eind-score-label">Je haalde ${punten}/${totaal}</div>
+      <div class="score-badge ${algScore}">Score: ${algScore}</div>
+      <div class="eind-bericht">${bericht}</div>
+      <button class="btn btn-primair" id="terug-btn">← Terug naar oefeningen</button>
+    </div>`;
+
+  document.getElementById('terug-btn').addEventListener('click', () => {
+    window.location.href = 'index.html';
+  });
+
+  slaanOp(algScore);
+}
+
+// ── Opslaan in Firebase ──
+async function slaanOp(algScore) {
+  try {
+    await updateDoc(doc(db, 'leerlingen', user.email), {
+      resultaten: arrayUnion({
+        soort:  SOORT,
+        score:  algScore,
+        punten: punten,
+        datum:  new Date().toISOString()
+      })
+    });
+  } catch(err) {
+    console.error('Fout bij opslaan:', err);
+  }
+}
+
+// ── Init ──
+async function init() {
+  user = checkLogin();
+  if (!user) return;
+
+  try {
+    const [configSnap, leerlingSnap, werkwoordSnap, onderwerpSnap] = await Promise.all([
+      getDoc(doc(db, 'config', 'indicatif_present_soort2')),
+      getDoc(doc(db, 'leerlingen', user.email)),
+      getDoc(doc(db, 'werkwoorden', 'indicatif_present')),
+      getDoc(doc(db, 'onderwerpen', 'personen'))
+    ]);
+
+    config      = configSnap.exists()    ? configSnap.data()    : {};
+    onderwerpen = onderwerpSnap.exists() ? onderwerpSnap.data() : {};
+
+    // Verzamel toegestane werkwoorden via groepen
+    const groepIds = leerlingSnap.exists() ? (leerlingSnap.data().groepen || []) : [];
+    const toegestaan = new Set();
+    for (const groepId of groepIds) {
+      const groepSnap = await getDoc(doc(db, 'groepen', groepId));
+      if (groepSnap.exists()) {
+        (groepSnap.data().werkwoorden || []).forEach(w => toegestaan.add(w));
+      }
+    }
+
+    if (!toegestaan.size) {
+      document.getElementById('inhoud').innerHTML =
+        `<div style="text-align:center;padding:60px;color:var(--muted)">⚠️ Er zijn nog geen werkwoorden toegewezen aan jouw groep. Neem contact op met je leerkracht.</div>`;
+      return;
+    }
+
+    const data  = werkwoordSnap.exists() ? werkwoordSnap.data() : {};
+    werkwoorden = (data.soort2 || [])
+      .map(w => ({ ...w, subsoort: 'soort2' }))
+      .filter(w => toegestaan.has(w.infinitief));
+
+    if (!werkwoorden.length) {
+      document.getElementById('inhoud').innerHTML =
+        `<div style="text-align:center;padding:60px;color:var(--muted)">Geen werkwoorden gevonden voor deze oefening.</div>`;
+      return;
+    }
+
+    vragen = genereer();
+    toonVraag();
+
+  } catch(err) {
+    console.error('Fout bij laden:', err);
+    document.getElementById('inhoud').innerHTML =
+      `<div style="text-align:center;padding:60px;color:var(--muted)">⚠️ Kon de oefening niet laden: ${err.message}</div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
