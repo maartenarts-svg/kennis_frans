@@ -802,6 +802,7 @@ function controleer() {
     fbBox.style.display = 'block';
     controleerBtn.style.display = 'none';
     volgendeBtn.style.display   = 'inline-block';
+    setTimeout(() => volgendeBtn.focus(), 50);
     invoer.disabled = true;
     updateVoortgang();
     return;
@@ -835,6 +836,7 @@ function controleer() {
   grBlok.style.display = 'block';
   controleerBtn.style.display = 'none';
   volgendeBtn.style.display   = 'inline-block';
+  setTimeout(() => volgendeBtn.focus(), 50);
   invoer.disabled = true;
   updateVoortgang();
 }
