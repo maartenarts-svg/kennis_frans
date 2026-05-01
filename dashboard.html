@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- ============================================================
  dashboard.html — Beheerderspaneel Frans Oefenplatform
 ============================================================ -->
@@ -482,12 +482,12 @@
 </div>
 
 <script type="module">
-import { db, TIJDEN } from './config.js';
+import { db, auth, TIJDEN } from './config.js';
+import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc }
-  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 // ── LOGIN ──
-checkLogin();
 function checkLogin() {
   const s = localStorage.getItem('frans_user');
   if (!s) { window.location.href = 'login.html'; return; }
@@ -496,7 +496,7 @@ function checkLogin() {
     if (!u.isAdmin) { window.location.href = 'index.html'; }
   } catch(e) { localStorage.removeItem('frans_user'); window.location.href = 'login.html'; }
 }
-window.uitloggen = () => { localStorage.removeItem('frans_user'); window.location.href = 'login.html'; };
+window.uitloggen = () => { signOut(auth); localStorage.removeItem('frans_user'); window.location.href = 'login.html'; };
 
 // ── STATE ──
 let alleLeerlingen = [], alleGroepen = [], leerlingenGeladen = false;
@@ -505,7 +505,11 @@ let alleLeerlingen = [], alleGroepen = [], leerlingenGeladen = false;
 const ALLE_OEFENINGEN = TIJDEN.flatMap(t => t.oefeningen);
 
 // ── INIT ──
-(async () => { await laadGroepen(); laadStatistieken(); laadInstellingen(); })();
+onAuthStateChanged(auth, (firebaseUser) => {
+  if (!firebaseUser) { window.location.href = 'login.html'; return; }
+  checkLogin();
+  (async () => { await laadGroepen(); laadStatistieken(); laadInstellingen(); })();
+});
 
 // ══════════════════════════════════════
 // TABS
@@ -541,7 +545,7 @@ function activeerTab(naam) {
 // GROEPEN
 // ══════════════════════════════════════
 async function laadGroepen() {
-  const snap = await getDocs(collection(db, 'groepen'));
+  const snap = await getDocs(collection(db, 'FR_groepen'));
   alleGroepen = [];
   snap.forEach(d => alleGroepen.push({ id: d.id, naam: d.data().naam, oefeningen: d.data().oefeningen || [], werkwoorden: d.data().werkwoorden || [] }));
   alleGroepen.sort((a,b) => a.naam.localeCompare(b.naam));
@@ -580,7 +584,7 @@ window.maakGroepAan = async function() {
   const naam = document.getElementById('nieuwe-groep-naam').value.trim();
   if (!naam) { toonBericht('groepen-bericht','fout','Vul een naam in.'); return; }
   try {
-    const ref = doc(collection(db,'groepen'));
+    const ref = doc(collection(db,'FR_groepen'));
     await setDoc(ref, { naam, oefeningen: [] });
     document.getElementById('nieuwe-groep-naam').value = '';
     toonBericht('groepen-bericht','succes',`✓ Groep "${naam}" aangemaakt.`);
@@ -592,11 +596,11 @@ window.verwijderGroep = async function(groepId) {
   const g = alleGroepen.find(g=>g.id===groepId);
   if (!confirm(`Groep "${g?.naam}" verwijderen?`)) return;
   try {
-    await deleteDoc(doc(db,'groepen',groepId));
+    await deleteDoc(doc(db,'FR_groepen',groepId));
     if (leerlingenGeladen) {
       for (const l of alleLeerlingen.filter(l=>(l.groepen||[]).includes(groepId))) {
         l.groepen = l.groepen.filter(gid=>gid!==groepId);
-        await updateDoc(doc(db,'leerlingen',l.email),{groepen:l.groepen});
+        await updateDoc(doc(db,'FR_leerlingen',l.email),{groepen:l.groepen});
       }
       renderLeerlingenTabel();
     }
@@ -621,7 +625,7 @@ window.openGroepModal = async function(groepId) {
   wwContainer.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Werkwoorden laden...</p>';
 
   try {
-    const snap = await getDoc(doc(db, 'werkwoorden', 'indicatif_present'));
+    const snap = await getDoc(doc(db, 'FR_werkwoorden', 'indicatif_present'));
     const data = snap.exists() ? snap.data() : {};
     const geselecteerd = g.werkwoorden || [];
 
@@ -684,7 +688,7 @@ window.slaGroepModalOp = async function() {
   const werkwoorden = [...document.querySelectorAll('#groep-modal-werkwoorden input[name="werkwoord"]:checked')].map(c=>c.value);
   if (!werkwoorden.length) { toonBericht('groep-modal-bericht','fout','Selecteer minstens één werkwoord.'); return; }
   try {
-    await updateDoc(doc(db,'groepen',id),{naam, oefeningen:oef, werkwoorden});
+    await updateDoc(doc(db,'FR_groepen',id),{naam, oefeningen:oef, werkwoorden});
     const g = alleGroepen.find(g=>g.id===id);
     if (g) { g.naam=naam; g.oefeningen=oef; g.werkwoorden=werkwoorden; }
     toonBericht('groep-modal-bericht','succes','✓ Opgeslagen.');
@@ -730,7 +734,7 @@ window.voegLidToe = async function(email, groepId) {
   if (!l) return;
   l.groepen = [...new Set([...(l.groepen||[]),groepId])];
   try {
-    await updateDoc(doc(db,'leerlingen',email),{groepen:l.groepen});
+    await updateDoc(doc(db,'FR_leerlingen',email),{groepen:l.groepen});
     toonBericht('lt-bericht','succes',`✓ ${l.naam} toegevoegd.`);
     renderLedenAdd();
     renderGroepenTabel(document.getElementById('groep-zoek')?.value||'');
@@ -774,7 +778,7 @@ window.verwijderLid = async function(email, groepId) {
   if (!l) return;
   l.groepen = (l.groepen||[]).filter(gid=>gid!==groepId);
   try {
-    await updateDoc(doc(db,'leerlingen',email),{groepen:l.groepen});
+    await updateDoc(doc(db,'FR_leerlingen',email),{groepen:l.groepen});
     toonBericht('lv-bericht','succes',`✓ ${l.naam} verwijderd.`);
     renderLedenDel();
     renderGroepenTabel(document.getElementById('groep-zoek')?.value||'');
@@ -793,7 +797,7 @@ function vulLedenFilters(jaarId,richtingId) {
 // LEERLINGEN
 // ══════════════════════════════════════
 async function laadLeerlingen() {
-  const snap = await getDocs(collection(db,'leerlingen'));
+  const snap = await getDocs(collection(db,'FR_leerlingen'));
   alleLeerlingen = [];
   snap.forEach(d => {
     const data = d.data();
@@ -872,7 +876,7 @@ window.voegLeerlingToe = async function() {
   const richting = document.getElementById('nieuw-richting').value.trim();
   if (!email||!naam){toonBericht('toevoegen-bericht','fout','E-mail en naam zijn verplicht.');return;}
   try {
-    await setDoc(doc(db,'leerlingen',email),{naam,jaar,richting,groepen:[],resultaten:[],spellingshulp:false,heeftDyslexie:false},{merge:true});
+    await setDoc(doc(db,'FR_leerlingen',email),{naam,jaar,richting,groepen:[],resultaten:[],spellingshulp:false,heeftDyslexie:false},{merge:true});
     ['nieuw-email','nieuw-naam','nieuw-jaar','nieuw-richting'].forEach(id=>document.getElementById(id).value='');
     toonBericht('toevoegen-bericht','succes',`✓ ${naam} toegevoegd.`);
     await laadLeerlingen(); laadStatistieken();
@@ -883,7 +887,7 @@ window.verwijderLeerling = async function(email) {
   const l=alleLeerlingen.find(l=>l.email===email);
   if(!confirm(`Leerling "${l?.naam}" (${email}) verwijderen?`))return;
   try {
-    await deleteDoc(doc(db,'leerlingen',email));
+    await deleteDoc(doc(db,'FR_leerlingen',email));
     toonBericht('leerlingen-bericht','succes',`✓ ${l?.naam} verwijderd.`);
     await laadLeerlingen(); laadStatistieken();
   }catch(err){toonBericht('leerlingen-bericht','fout',`Fout: ${err.message}`);}
@@ -912,7 +916,7 @@ window.slaModalOp = async function() {
   const spellingshulp = document.getElementById('modal-spellingshulp').checked;
   if(!naam){toonBericht('modal-bericht','fout','Naam is verplicht.');return;}
   try {
-    await updateDoc(doc(db,'leerlingen',email),{naam,jaar,richting,groepen,spellingshulp});
+    await updateDoc(doc(db,'FR_leerlingen',email),{naam,jaar,richting,groepen,spellingshulp});
     const l=alleLeerlingen.find(l=>l.email===email);
     if(l){l.naam=naam;l.jaar=jaar;l.richting=richting;l.groepen=groepen;l.spellingshulp=spellingshulp;}
     toonBericht('modal-bericht','succes','✓ Opgeslagen.');
@@ -1044,7 +1048,7 @@ document.getElementById('upload-btn').addEventListener('click',async()=>{
   try {
     let ok=0,fout=0;
     for(const l of csvData){
-      try{await setDoc(doc(db,'leerlingen',l.email),{naam:l.naam,jaar:l.jaar,richting:l.richting,groepen:[],resultaten:[],spellingshulp:false,heeftDyslexie:false},{merge:true});ok++;}
+      try{await setDoc(doc(db,'FR_leerlingen',l.email),{naam:l.naam,jaar:l.jaar,richting:l.richting,groepen:[],resultaten:[],spellingshulp:false,heeftDyslexie:false},{merge:true});ok++;}
       catch(e){fout++;}
     }
     toonBericht('upload-bericht','succes',`✓ Import voltooid: ${ok} succesvol, ${fout} fouten.`);
@@ -1084,7 +1088,7 @@ window.downloadScorelijst=async function(){
     let bronData;
     if(leerlingenGeladen){bronData=alleLeerlingen;}
     else{
-      const snap=await getDocs(collection(db,'leerlingen')); bronData=[];
+      const snap=await getDocs(collection(db,'FR_leerlingen')); bronData=[];
       snap.forEach(d=>{const data=d.data();bronData.push({email:d.id,naam:data.naam||d.id,groepen:data.groepen||[],resultaten:data.resultaten||[]});});
     }
     const gefilterd=groepFilter?bronData.filter(l=>(l.groepen||[]).includes(groepFilter)):bronData;
@@ -1151,7 +1155,7 @@ async function laadInstellingen() {
       // Laad config
       let cfg = {};
       try {
-        const snap = await getDoc(doc(db, 'config', configId));
+        const snap = await getDoc(doc(db, 'FR_config', configId));
         if (snap.exists()) cfg = snap.data();
       } catch(e) {}
 
@@ -1293,7 +1297,7 @@ window.slaInstellingenOp = async function(configId, sleutel) {
   }
 
   try {
-    await setDoc(doc(db, 'config', configId), cfg, { merge: true });
+    await setDoc(doc(db, 'FR_config', configId), cfg, { merge: true });
     toonBericht('instellingen-bericht', 'succes', '✓ Instellingen opgeslagen.');
   } catch(err) {
     toonBericht('instellingen-bericht', 'fout', `Fout: ${err.message}`);

@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<!-- ============================================================
+ migratie.html — Eenmalig migratiescript
+ Kopieert alle data van de oude Firebase (kennis-frans) naar de
+ nieuwe Firebase (eerste-graad) met FR_-prefix op collectienamen.
+ Gebruik: open via Live Server, klik op "Starten".
+ De oude data blijft onaangeroerd.
+============================================================ -->
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Migratie — Frans Oefenplatform</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: monospace; background: #0f1117; color: #e8eaf0; padding: 32px; min-height: 100vh; }
+    h1 { font-size: 1.3rem; margin-bottom: 8px; color: #5b8dee; }
+    p  { color: #8891aa; font-size: 0.88rem; margin-bottom: 24px; line-height: 1.6; }
+    .knoppen { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+    .btn { padding: 12px 28px; background: #5b8dee; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: monospace; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .log { margin-top: 8px; background: #141720; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px; max-height: 600px; overflow-y: auto; font-size: 0.82rem; line-height: 1.8; }
+    .ok   { color: #4cbb8a; }
+    .fout { color: #e05757; }
+    .info { color: #5b8dee; }
+    .warn { color: #f5c842; }
+    .sectie { color: #9b8dee; font-weight: bold; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<h1>Migratie — Frans Oefenplatform</h1>
+<p>
+  Dit script kopieert alle data van de <strong>oude</strong> Firebase (kennis-frans) naar de
+  <strong>nieuwe</strong> Firebase (eerste-graad).<br>
+  Collectienamen krijgen automatisch het prefix <strong>FR_</strong>.<br>
+  De oude data blijft volledig onaangeroerd.<br><br>
+  Eenmalig uitvoeren. Controleer daarna in de Firebase Console van eerste-graad.
+</p>
+
+<div class="knoppen">
+  <button class="btn" id="btn-start" onclick="startMigratie()">Migratie starten</button>
+</div>
+
+<div class="log" id="log"></div>
+
+<script type="module">
+import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, collection, getDocs, doc, setDoc }
+                             from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+// ── Oude Firebase (bron — alleen lezen) ──
+const oudConfig = {
+  apiKey: "AIzaSyC43esFV3YrATDsldfTFxpz8cncI00qQJA",
+  authDomain: "kennis-frans.firebaseapp.com",
+  projectId: "kennis-frans",
+  storageBucket: "kennis-frans.firebasestorage.app",
+  messagingSenderId: "922019945708",
+  appId: "1:922019945708:web:2f03262e2fd9d7953199c9"
+};
+
+// ── Nieuwe Firebase (doel — schrijven) ──
+const nieuwConfig = {
+  apiKey: "AIzaSyDEwRsDAKugy2g83Nnmhcvj7qdCQkTfKYg",
+  authDomain: "eerste-graad.firebaseapp.com",
+  projectId: "eerste-graad",
+  storageBucket: "eerste-graad.firebasestorage.app",
+  messagingSenderId: "898558097965",
+  appId: "1:898558097965:web:1b494fc5f4f119d8e396a4"
+};
+
+const oudApp  = initializeApp(oudConfig,  'oud');
+const nieuwApp = initializeApp(nieuwConfig, 'nieuw');
+const dbOud   = getFirestore(oudApp);
+const dbNieuw = getFirestore(nieuwApp);
+
+// Collecties: [naam in oud, naam in nieuw]
+const COLLECTIES = [
+  ['leerlingen',  'FR_leerlingen'],
+  ['groepen',     'FR_groepen'],
+  ['werkwoorden', 'FR_werkwoorden'],
+  ['onderwerpen', 'FR_onderwerpen'],
+  ['config',      'FR_config'],
+];
+
+function schrijf(tekst, klasse = '') {
+  const log = document.getElementById('log');
+  const regel = document.createElement('div');
+  regel.className = klasse;
+  regel.innerHTML = tekst;
+  log.appendChild(regel);
+  log.scrollTop = log.scrollHeight;
+}
+
+window.startMigratie = async function() {
+  const btn = document.getElementById('btn-start');
+  btn.disabled = true;
+  schrijf('Migratie gestart...', 'info');
+  schrijf('', '');
+
+  let totaalDocs = 0;
+  let totaalFouten = 0;
+
+  for (const [oudNaam, nieuwNaam] of COLLECTIES) {
+    schrijf(`── ${oudNaam}  →  ${nieuwNaam}`, 'sectie');
+
+    try {
+      const snap = await getDocs(collection(dbOud, oudNaam));
+
+      if (snap.empty) {
+        schrijf(`  (leeg — geen documenten gevonden)`, 'warn');
+        continue;
+      }
+
+      for (const document of snap.docs) {
+        try {
+          await setDoc(doc(dbNieuw, nieuwNaam, document.id), document.data());
+          schrijf(`  ✓ ${document.id}`, 'ok');
+          totaalDocs++;
+        } catch (err) {
+          schrijf(`  ✗ ${document.id}: ${err.message}`, 'fout');
+          totaalFouten++;
+        }
+      }
+
+    } catch (err) {
+      schrijf(`  Fout bij lezen van "${oudNaam}": ${err.message}`, 'fout');
+      totaalFouten++;
+    }
+
+    schrijf('', '');
+  }
+
+  schrijf('──────────────────────────────', 'info');
+  if (totaalFouten === 0) {
+    schrijf(`Migratie voltooid. ${totaalDocs} document(en) gekopieerd, geen fouten.`, 'ok');
+  } else {
+    schrijf(`Migratie voltooid met waarschuwingen. ${totaalDocs} gekopieerd, ${totaalFouten} mislukt.`, 'warn');
+  }
+};
+</script>
+</body>
+</html>

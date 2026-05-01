@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- ============================================================
  import_onderwerpen_config.html — Eenmalig importscript
  voor onderwerpen en config-instellingen
@@ -41,16 +41,16 @@
 <div class="log" id="log"></div>
 
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC43esFV3YrATDsldfTFxpz8cncI00qQJA",
-  authDomain: "kennis-frans.firebaseapp.com",
-  projectId: "kennis-frans",
-  storageBucket: "kennis-frans.firebasestorage.app",
-  messagingSenderId: "922019945708",
-  appId: "1:922019945708:web:2f03262e2fd9d7953199c9"
+  apiKey: "AIzaSyDEwRsDAKugy2g83Nnmhcvj7qdCQkTfKYg",
+  authDomain: "eerste-graad.firebaseapp.com",
+  projectId: "eerste-graad",
+  storageBucket: "eerste-graad.firebasestorage.app",
+  messagingSenderId: "898558097965",
+  appId: "1:898558097965:web:1b494fc5f4f119d8e396a4"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -212,7 +212,7 @@ window.importeerOnderwerpen = async function() {
   schrijf('⏳ Onderwerpen importeren...', 'info');
 
   try {
-    await setDoc(doc(db, 'onderwerpen', 'personen'), onderwerpen);
+    await setDoc(doc(db, 'FR_onderwerpen', 'personen'), onderwerpen);
 
     for (const [persoon, data] of Object.entries(onderwerpen)) {
       schrijf(`✓ ${persoon}: ${data.varianten.length} varianten (standaard: "${data.standaard}")`, 'ok');
@@ -237,7 +237,7 @@ window.importeerConfig = async function() {
 
   try {
     for (const [sleutel, instellingen] of Object.entries(config)) {
-      await setDoc(doc(db, 'config', sleutel), instellingen);
+      await setDoc(doc(db, 'FR_config', sleutel), instellingen);
       schrijf(`✓ ${sleutel} opgeslagen`, 'ok');
     }
 

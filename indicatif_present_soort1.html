@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- ============================================================
  indicatif_present_soort1.html
  Oefening: Indicatif présent — werkwoorden op -er (soort 1)
@@ -408,13 +408,14 @@
 </div>
 
 <script type="module">
-import { db } from './config.js';
+import { db, auth } from './config.js';
+import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { grammaticaHTML as gr1a } from './grammatica/indicatif_present_soort1a.js';
 import { grammaticaHTML as gr1b } from './grammatica/indicatif_present_soort1b.js';
 import { grammaticaHTML as gr1c } from './grammatica/indicatif_present_soort1c.js';
 import {
   doc, getDoc, updateDoc, arrayUnion
-} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 // ── Constanten ──
 const SOORT      = 'soort1';
@@ -875,7 +876,7 @@ function toonEindscherm() {
 // ── Opslaan in Firebase ──
 async function slaanOp(algScore) {
   try {
-    await updateDoc(doc(db, 'leerlingen', user.email), {
+    await updateDoc(doc(db, 'FR_leerlingen', user.email), {
       resultaten: arrayUnion({
         soort:  SOORT,
         score:  algScore,
@@ -896,10 +897,10 @@ async function init() {
   try {
     // Laad config, leerling, werkwoorden en onderwerpen parallel
     const [configSnap, leerlingSnap, werkwoordSnap, onderwerpSnap] = await Promise.all([
-      getDoc(doc(db, 'config', 'indicatif_present_soort1')),
-      getDoc(doc(db, 'leerlingen', user.email)),
-      getDoc(doc(db, 'werkwoorden', 'indicatif_present')),
-      getDoc(doc(db, 'onderwerpen', 'personen'))
+      getDoc(doc(db, 'FR_config', 'indicatif_present_soort1')),
+      getDoc(doc(db, 'FR_leerlingen', user.email)),
+      getDoc(doc(db, 'FR_werkwoorden', 'indicatif_present')),
+      getDoc(doc(db, 'FR_onderwerpen', 'personen'))
     ]);
 
     config      = configSnap.exists()    ? configSnap.data()    : {};
@@ -909,7 +910,7 @@ async function init() {
     const groepIds = leerlingSnap.exists() ? (leerlingSnap.data().groepen || []) : [];
     const toegestaan = new Set();
     for (const groepId of groepIds) {
-      const groepSnap = await getDoc(doc(db, 'groepen', groepId));
+      const groepSnap = await getDoc(doc(db, 'FR_groepen', groepId));
       if (groepSnap.exists()) {
         (groepSnap.data().werkwoorden || []).forEach(w => toegestaan.add(w));
       }
@@ -945,7 +946,10 @@ async function init() {
   }
 }
 
-init();
+onAuthStateChanged(auth, (firebaseUser) => {
+  if (!firebaseUser) { window.location.href = 'login.html'; return; }
+  init();
+});
 </script>
 </body>
 </html>

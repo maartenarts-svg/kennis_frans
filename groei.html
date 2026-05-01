@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- ============================================================
  groei.html — Groeioverzicht leerling Frans Oefenplatform
 ============================================================ -->
@@ -272,11 +272,12 @@
 </div>
 
 <script type="module">
-import { db, TIJDEN } from './config.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, auth, TIJDEN } from './config.js';
+import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 // ── Login check ──
-const user = checkLogin();
+let user = null;
 
 function checkLogin() {
   const stored = localStorage.getItem('frans_user');
@@ -297,7 +298,7 @@ function checkLogin() {
 async function init() {
   if (!user) return;
   try {
-    const leerlingSnap = await getDoc(doc(db, 'leerlingen', user.email));
+    const leerlingSnap = await getDoc(doc(db, 'FR_leerlingen', user.email));
     if (!leerlingSnap.exists()) throw new Error('Geen data gevonden');
 
     const data       = leerlingSnap.data();
@@ -307,7 +308,7 @@ async function init() {
     // Bepaal beschikbare soorten via groepen
     const beschikbareSoorten = new Set();
     for (const groepId of groepIds) {
-      const groepSnap = await getDoc(doc(db, 'groepen', groepId));
+      const groepSnap = await getDoc(doc(db, 'FR_groepen', groepId));
       if (groepSnap.exists()) {
         (groepSnap.data().oefeningen || []).forEach(s => beschikbareSoorten.add(s));
       }
@@ -423,7 +424,11 @@ window.toonTab = function(tijdId) {
   });
 };
 
-init();
+onAuthStateChanged(auth, (firebaseUser) => {
+  if (!firebaseUser) { window.location.href = 'login.html'; return; }
+  user = checkLogin();
+  init();
+});
 </script>
 </body>
 </html>

@@ -1,20 +1,16 @@
-// ============================================================
+﻿// ============================================================
 //  CONFIG.JS — Centrale configuratie Frans Oefenplatform
 // ============================================================
 
 // ── FIREBASE CONFIGURATIE ──
 const firebaseConfig = {
-  apiKey: "AIzaSyC43esFV3YrATDsldfTFxpz8cncI00qQJA",
-  authDomain: "kennis-frans.firebaseapp.com",
-  projectId: "kennis-frans",
-  storageBucket: "kennis-frans.firebasestorage.app",
-  messagingSenderId: "922019945708",
-  appId: "1:922019945708:web:2f03262e2fd9d7953199c9"
+  apiKey: "AIzaSyDEwRsDAKugy2g83Nnmhcvj7qdCQkTfKYg",
+  authDomain: "eerste-graad.firebaseapp.com",
+  projectId: "eerste-graad",
+  storageBucket: "eerste-graad.firebasestorage.app",
+  messagingSenderId: "898558097965",
+  appId: "1:898558097965:web:1b494fc5f4f119d8e396a4"
 };
-
-// ── ADMIN INSTELLINGEN ──
-const ADMIN_EMAIL = "beheerder.frans@labsintniklaas.be";
-const ADMIN_CODE  = "963974178528";
 
 // ── TIJDEN & OEFENINGEN ──
 // Volgorde bepaalt de tabbladen op het leerlingenpaneel.
@@ -76,11 +72,13 @@ const TIJDEN = [
 ];
 
 // ── FIREBASE INITIALISATIE ──
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore }  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore }  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getAuth }       from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
 
 // ── EXPORTS ──
-export { db, ADMIN_EMAIL, ADMIN_CODE, TIJDEN };
+export { db, auth, TIJDEN };

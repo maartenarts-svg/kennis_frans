@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- ============================================================
  index.html — Leerlingenpaneel Frans Oefenplatform
 ============================================================ -->
@@ -433,11 +433,12 @@
 </div>
 
 <script type="module">
-import { db, TIJDEN } from './config.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, auth, TIJDEN } from './config.js';
+import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 // ── Login check ──
-const user = checkLogin();
+let user = null;
 
 function checkLogin() {
   const stored = localStorage.getItem('frans_user');
@@ -457,6 +458,7 @@ function checkLogin() {
 }
 
 window.uitloggen = function() {
+  signOut(auth);
   localStorage.removeItem('frans_user');
   window.location.href = 'login.html';
 };
@@ -467,7 +469,7 @@ async function init() {
 
   try {
     // Haal leerlingdata op
-    const leerlingSnap = await getDoc(doc(db, 'leerlingen', user.email));
+    const leerlingSnap = await getDoc(doc(db, 'FR_leerlingen', user.email));
     if (!leerlingSnap.exists()) { toonGeenOefeningen(); return; }
 
     const leerlingData = leerlingSnap.data();
@@ -478,7 +480,7 @@ async function init() {
     // Verzamel beschikbare oefensoorten via groepen
     const beschikbareSoorten = new Set();
     for (const groepId of groepIds) {
-      const groepSnap = await getDoc(doc(db, 'groepen', groepId));
+      const groepSnap = await getDoc(doc(db, 'FR_groepen', groepId));
       if (groepSnap.exists()) {
         (groepSnap.data().oefeningen || []).forEach(s => beschikbareSoorten.add(s));
       }
@@ -576,7 +578,11 @@ function toonGeenOefeningen() {
     </div>`;
 }
 
-init();
+onAuthStateChanged(auth, (firebaseUser) => {
+  if (!firebaseUser) { window.location.href = 'login.html'; return; }
+  user = checkLogin();
+  init();
+});
 </script>
 
 </body>
